@@ -26,7 +26,7 @@
   --bar-h: 46px;
   color-scheme: dark;
 }
-:root[data-theme="light"] {
+:root:not([data-theme="dark"]) {
   --ink: #141a24; --ink-soft: #5b6676; --ink-faint: #8d97a6;
   --paper: #eef0f3; --paper-alt: #e7eaee; --card: #ffffff; --card-head: #f6f7f9; --rule: #dde1e7; --rule-strong: #c9cfd8;
   --accent: #b26f00; --accent-soft: rgba(178, 111, 0, .10); --accent-ink: #ffffff;
@@ -194,7 +194,7 @@ a { color: var(--accent); }
       <span class="chip tw-only">TWSE</span><span class="chip tw-only">US</span>
       <span>資料至 <b data-source="data_asof" data-field="date" data-row="0">—</b></span>
     </div>
-    <button class="theme-btn" type="button" id="theme-toggle">淺色</button>
+    <button class="theme-btn" type="button" id="theme-toggle">深色</button>
   </div>
 </header>
 <div class="shell">
@@ -2707,7 +2707,7 @@ dash.onData(() => {
   onScroll();
   const btn = document.querySelector('.theme-btn');
   const root = document.documentElement;
-  const dark = () => root.dataset.theme !== 'light';
+  const dark = () => root.dataset.theme === 'dark';
   const label = () => { btn.textContent = dark() ? '淺色' : '深色'; btn.setAttribute('aria-label', dark() ? '切換為淺色模式' : '切換為深色模式'); };
   try { const t = localStorage.getItem('tr-theme'); if (t === 'light' || t === 'dark') root.dataset.theme = t; } catch (e) {}
   label();
