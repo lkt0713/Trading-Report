@@ -6,7 +6,7 @@
 以一個永遠置頂、無邊框、可拖曳的小視窗顯示。
 
 用法：
-    python floating_quote.py                  # 使用上次的股票（預設 US.AAPL）
+    python floating_quote.py                  # 使用上次的股票（預設 US.BE Bloom Energy）
     python floating_quote.py --code US.TSLA   # 指定股票
     python floating_quote.py --demo           # 不連 OpenD，用假資料看外觀
 
@@ -32,7 +32,7 @@ from tkinter import simpledialog
 CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "floating_quote.json")
 
 DEFAULT_CONFIG = {
-    "code": "US.AAPL",
+    "code": "US.BE",       # Bloom Energy
     "host": "127.0.0.1",
     "port": 11111,
     "x": None,

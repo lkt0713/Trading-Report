@@ -25,7 +25,7 @@ H 228.10  L 224.92  V 41.23M
 ## 使用
 
 ```
-python floating_quote.py                 # 用上次的股票（第一次預設 US.AAPL）
+python floating_quote.py                 # 用上次的股票（第一次預設 US.BE（Bloom Energy））
 python floating_quote.py --code TSLA     # 指定股票
 python floating_quote.py --demo          # 不連 OpenD，用假資料先看外觀
 python floating_quote.py --host 192.168.1.10 --port 11111   # OpenD 在別台電腦
