@@ -2948,6 +2948,20 @@ dash.onData(() => {
       });
     }, { rootMargin: '0px 0px -8% 0px', threshold: .08 });
     cards.forEach((c) => io.observe(c));
+    // safety net: anything scrolled past (or already above the fold) is shown even if the observer missed it
+    let pending = cards.slice(), tick = false;
+    const sweep = () => {
+      tick = false;
+      pending = pending.filter((c) => {
+        if (c.classList.contains('in')) return false;
+        if (c.getBoundingClientRect().top < innerHeight) { io.unobserve(c); c.classList.add('in'); return false; }
+        return true;
+      });
+      if (!pending.length) removeEventListener('scroll', onScroll);
+    };
+    const onScroll = () => { if (!tick) { tick = true; requestAnimationFrame(sweep); } };
+    addEventListener('scroll', onScroll, { passive: true });
+    setTimeout(sweep, 600);
   }
 
   // count-up for KPI numbers and stat values
