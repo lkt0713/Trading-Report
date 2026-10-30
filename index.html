@@ -1,4 +1,26 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head>
+<!-- app-meta:start（由同步排程自動插入，勿手動修改 index.html 這一段；要改請改 app-head.html） -->
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#07071c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="交易報表">
+<meta name="description" content="台股＋美股的損益、持股與進出場紀錄">
+<meta property="og:type" content="website">
+<meta property="og:title" content="交易統計報表">
+<meta property="og:description" content="台股＋美股的損益、持股與進出場紀錄">
+<meta property="og:url" content="https://lkt0713.github.io/Trading-Report/">
+<meta property="og:image" content="https://lkt0713.github.io/Trading-Report/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://lkt0713.github.io/Trading-Report/og-image.png">
+<!-- app-meta:end -->
+<meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>交易統計報表</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -347,6 +369,7 @@ a { color: var(--accent); }
 .tr-chart:not(#eq-twd):not(#eq-usd) svg circle[fill="var(--up)"],
 .tr-chart:not(#eq-twd):not(#eq-usd) svg circle[fill="var(--down)"] { filter: drop-shadow(0 0 4px rgba(255, 255, 255, .28)); }
 
+.brand-mark svg { width: 19px; height: 19px; display: block; filter: drop-shadow(0 0 3px rgba(255, 255, 255, .5)); }
 /* form controls: opaque so native dropdown lists stay readable */
 .tm-pick select, .tr-search { background-color: color-mix(in srgb, var(--paper) 88%, #ffffff); color: var(--ink); }
 :root[data-theme="dark"] .tm-pick select, :root[data-theme="dark"] .tr-search { background-color: #141236; color-scheme: dark; }
@@ -371,7 +394,7 @@ a { color: var(--accent); }
 </style>
 <header class="topbar">
   <div class="topbar-in">
-    <a class="brand" href="#top"><span class="brand-mark">TR</span><span class="brand-name">交易統計報表</span><span class="brand-tag">PORTFOLIO&nbsp;ANALYTICS</span></a>
+    <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 512 512" width="24" height="24"><g stroke-linecap="round"><line x1="150" y1="250" x2="150" y2="400" stroke="#fff" stroke-width="22"/><rect x="112" y="282" width="76" height="92" rx="16" fill="#fff"/><line x1="256" y1="168" x2="256" y2="350" stroke="#fff" stroke-width="22"/><rect x="218" y="200" width="76" height="118" rx="16" fill="#fff"/><line x1="362" y1="96" x2="362" y2="272" stroke="#fff" stroke-width="22"/><rect x="324" y="122" width="76" height="122" rx="16" fill="#fff"/></g></svg></span><span class="brand-name">交易統計報表</span><span class="brand-tag">PORTFOLIO&nbsp;ANALYTICS</span></a>
     <div class="mkt">
       <span class="chip tw-only">TWSE</span><span class="chip tw-only">US</span>
       <span>資料至 <b data-source="data_asof" data-field="date" data-row="0">—</b></span>
@@ -3000,5 +3023,4 @@ dash.onData(() => {
   setTimeout(() => mo.disconnect(), 15000);
 })();
 </script>
-
 </body></html>

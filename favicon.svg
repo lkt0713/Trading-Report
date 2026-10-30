@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="bgA" cx="20%" cy="12%" r="75%"><stop offset="0" stop-color="#3a2a9e"/><stop offset=".55" stop-color="#120f3d"/><stop offset="1" stop-color="#07071c"/></radialGradient>
+    <radialGradient id="bgB" cx="92%" cy="96%" r="60%"><stop offset="0" stop-color="#ff4fd8" stop-opacity=".45"/><stop offset="1" stop-color="#ff4fd8" stop-opacity="0"/></radialGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22e4ff"/><stop offset=".5" stop-color="#6d4cff"/><stop offset="1" stop-color="#ff4fd8"/></linearGradient>
+    <linearGradient id="c1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7ff6ff"/><stop offset="1" stop-color="#22c8ff"/></linearGradient>
+    <linearGradient id="c2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a58bff"/><stop offset="1" stop-color="#6d4cff"/></linearGradient>
+    <linearGradient id="c3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff8fe6"/><stop offset="1" stop-color="#ff4fa8"/></linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bgA)"/>
+  <rect width="512" height="512" rx="112" fill="url(#bgB)"/>
+  <g stroke="#ffffff" stroke-opacity=".06" stroke-width="2">
+    <path d="M0 160H512M0 256H512M0 352H512"/>
+  </g>
+  <g filter="url(#glow)" stroke-linecap="round">
+    <!-- candle 1 -->
+    <line x1="150" y1="250" x2="150" y2="400" stroke="#22e4ff" stroke-width="10"/>
+    <rect x="118" y="282" width="64" height="92" rx="14" fill="url(#c1)"/>
+    <!-- candle 2 -->
+    <line x1="256" y1="168" x2="256" y2="350" stroke="#8a6dff" stroke-width="10"/>
+    <rect x="224" y="200" width="64" height="118" rx="14" fill="url(#c2)"/>
+    <!-- candle 3 -->
+    <line x1="362" y1="96" x2="362" y2="272" stroke="#ff4fd8" stroke-width="10"/>
+    <rect x="330" y="122" width="64" height="122" rx="14" fill="url(#c3)"/>
+  </g>
+  <rect x="6" y="6" width="500" height="500" rx="106" fill="none" stroke="url(#edge)" stroke-width="10" stroke-opacity=".9"/>
+</svg>
