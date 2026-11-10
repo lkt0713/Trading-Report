@@ -392,6 +392,75 @@ a { color: var(--accent); }
 @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { body::before { animation: none; } }
 </style>
+<style id="v2-layout">
+/* ===== tabs, day-change strip, KPI grid, sticky table column ===== */
+:root { --stick-bg: #121130; }
+:root:not([data-theme="dark"]) { --stick-bg: #f3f4fd; }
+.tr { position: relative; }
+#dash-root .tr > section, #dash-root .tr > .hero { scroll-margin-top: calc(var(--bar-h) + 60px); }
+@media (min-width: 1100px) { #dash-root .tr > section, #dash-root .tr > .hero { scroll-margin-top: calc(var(--bar-h) + 10px); } }
+.tr > section.tab-off { position: absolute; left: 0; right: 0; height: 0; overflow: hidden; visibility: hidden; padding-block: 0; pointer-events: none; }
+
+.tabbar { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 8px 12px; position: sticky; top: var(--bar-h); z-index: 20;
+  background: var(--bar-bg); -webkit-backdrop-filter: blur(20px) saturate(160%); backdrop-filter: blur(20px) saturate(160%); border-bottom: 1px solid var(--rule); }
+.tabbar::-webkit-scrollbar { display: none; }
+.tabbar button { flex: none; font: 600 13px/1 var(--font-anthropic-sans); color: var(--ink-soft); background: transparent; border: 1px solid var(--rule-strong); border-radius: 999px; padding: 8px 14px; white-space: nowrap; cursor: pointer; transition: color .2s, background .2s, box-shadow .2s; }
+.tabbar button:hover { color: var(--ink); border-color: var(--accent); }
+.tabbar button[aria-selected="true"] { color: var(--accent-ink); border-color: transparent; background: linear-gradient(90deg, var(--glow-b), color-mix(in srgb, var(--glow-a) 80%, var(--glow-b))); box-shadow: 0 0 18px color-mix(in srgb, var(--glow-b) 45%, transparent); }
+:root:not([data-theme="dark"]) .tabbar button[aria-selected="true"] { color: #fff; }
+.site-nav button.grp { background: none; border: 0; text-align: left; cursor: pointer; font-family: var(--font-num); }
+@media (max-width: 1099px) {
+  .side { position: static; background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; border-bottom: 0; }
+  .site-nav { padding: 8px 12px 0; }
+  .site-nav a.off-tab { display: none; }
+  .site-nav a { font-size: 12.5px; border: 1px solid var(--rule); }
+  .shell .side .site-nav a[aria-current="true"] { color: var(--accent) !important; background: var(--accent-soft); border-color: var(--accent); box-shadow: none; font-weight: 600; }
+}
+@media (min-width: 1100px) {
+  .tabbar { display: none; }
+  .site-nav button.grp { display: block; width: 100%; }
+  .site-nav button.grp:hover { color: var(--ink); }
+  .site-nav button.grp.on { color: var(--accent); }
+  .site-nav a.off-tab { opacity: .62; }
+  .site-nav a.off-tab:hover { opacity: 1; }
+}
+
+/* KPI grid: one row per market */
+.kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.kpi.lead { grid-column: 1 / -1; }
+@media (min-width: 720px) { .kpis { grid-template-columns: 1.15fr 1fr 1fr; } .kpi.lead { grid-column: auto; } }
+
+/* day-change strip */
+.daybar { margin-top: 14px; padding: 14px 18px 16px; background: var(--glass); border: 1px solid var(--glass-edge); border-radius: var(--cds-radius); box-shadow: inset 0 1px 0 var(--glass-hi), var(--glass-shadow); -webkit-backdrop-filter: blur(18px) saturate(150%); backdrop-filter: blur(18px) saturate(150%); }
+.day-h { font: 600 10.5px/1 var(--font-num); letter-spacing: .18em; color: var(--accent); margin-bottom: 12px; }
+.day-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: 14px 28px; }
+.day-m { min-width: 0; }
+.day-top { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.day-mkt { font: 600 13px/1.2 var(--font-display); color: var(--ink); letter-spacing: .04em; }
+.day-date { font: 500 11.5px/1.2 var(--font-num); color: var(--ink-soft); }
+.day-v { font: 700 24px/1.2 var(--font-display); font-variant-numeric: tabular-nums; margin-top: 6px; }
+.day-v small { font: 500 12px/1 var(--font-anthropic-sans); color: var(--ink-soft); margin-left: 4px; }
+.day-s { font-size: 11.5px; color: var(--ink-soft); margin-top: 3px; font-variant-numeric: tabular-nums; }
+.day-s span { font-family: var(--font-num); color: var(--ink); }
+.day-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.day-chip { display: inline-flex; align-items: baseline; gap: 7px; font: 500 11.5px/1 var(--font-num); padding: 6px 10px; border: 1px solid var(--rule-strong); border-radius: 999px; background: rgba(255, 255, 255, .04); white-space: nowrap; }
+:root:not([data-theme="dark"]) .day-chip { background: rgba(255, 255, 255, .6); }
+.day-chip b { color: var(--ink); font-weight: 600; }
+.day-chip .px { color: var(--ink-soft); }
+.day-none { font-size: 11.5px; color: var(--ink-faint); margin-top: 10px; }
+@media (prefers-reduced-motion: no-preference) { .neon-js .hero .daybar { animation: rise .7s cubic-bezier(.2, .7, .2, 1) both; animation-delay: .54s; } }
+
+/* leveraged chart */
+.lev-chart-t { font: 600 12px/1 var(--font-num); color: var(--ink-soft); letter-spacing: .06em; margin: 14px 0 2px; }
+.lev-legend i.dash { background: none !important; border-top: 2px dashed var(--ink-soft); height: 0; border-radius: 0; vertical-align: 3px; width: 14px; }
+
+/* phones: keep the symbol (or first) column in view while a table scrolls sideways */
+@media (max-width: 720px) {
+  .tr td.stick, .tr th.stick { position: sticky; left: 0; background: var(--stick-bg) !important; box-shadow: 1px 0 0 var(--rule-strong); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .tr td.stick { z-index: 1; }
+  .tr th.stick { z-index: 3; }
+}
+</style>
 <header class="topbar">
   <div class="topbar-in">
     <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 512 512" width="24" height="24"><g stroke-linecap="round"><line x1="150" y1="250" x2="150" y2="400" stroke="#fff" stroke-width="22"/><rect x="112" y="282" width="76" height="92" rx="16" fill="#fff"/><line x1="256" y1="168" x2="256" y2="350" stroke="#fff" stroke-width="22"/><rect x="218" y="200" width="76" height="118" rx="16" fill="#fff"/><line x1="362" y1="96" x2="362" y2="272" stroke="#fff" stroke-width="22"/><rect x="324" y="122" width="76" height="122" rx="16" fill="#fff"/></g></svg></span><span class="brand-name">交易統計報表</span><span class="brand-tag">PORTFOLIO&nbsp;ANALYTICS</span></a>
@@ -403,13 +472,14 @@ a { color: var(--accent); }
   </div>
 </header>
 <div class="shell">
+<div class="tabbar" role="tablist" aria-label="分頁"><button type="button" role="tab" data-tab="perf" aria-selected="true">績效</button><button type="button" role="tab" data-tab="bench" aria-selected="false">基準比較</button><button type="button" role="tab" data-tab="pos" aria-selected="false">部位</button><button type="button" role="tab" data-tab="ana" aria-selected="false">交易分析</button><button type="button" role="tab" data-tab="acct" aria-selected="false">帳戶</button></div>
 <aside class="side">
   <nav class="site-nav" aria-label="章節">
-    <span class="grp">績效</span><a href="#top">摘要</a><a href="#overview">總覽</a><a href="#equity">總損益走勢</a><a href="#trend">損益走勢</a>
-    <span class="grp">基準比較</span><a href="#vs0050">台股 vs 0050</a><a href="#vssoxx">美股 vs SOXX</a>
-    <span class="grp">部位</span><a href="#open">庫存與配息</a><a href="#leverage">槓桿 ETF</a><a href="#holding">持有期間</a>
-    <span class="grp">交易分析</span><a href="#daytrade">當沖</a><a href="#timing">進出場時機</a><a href="#symbols">標的</a><a href="#types">交易類型</a><a href="#habits">交易習慣</a>
-    <span class="grp">帳戶</span><a href="#accounts">帳戶</a><a href="#detail">明細</a>
+    <button type="button" class="grp on" data-tab="perf">績效</button><a href="#top">摘要</a><a href="#overview">總覽</a><a href="#equity">總損益走勢</a><a href="#trend">損益走勢</a>
+    <button type="button" class="grp" data-tab="bench">基準比較</button><a href="#vs0050" class="off-tab">台股 vs 0050</a><a href="#vssoxx" class="off-tab">美股 vs SOXX</a>
+    <button type="button" class="grp" data-tab="pos">部位</button><a href="#open" class="off-tab">庫存與配息</a><a href="#leverage" class="off-tab">槓桿 ETF</a><a href="#holding" class="off-tab">持有期間</a>
+    <button type="button" class="grp" data-tab="ana">交易分析</button><a href="#daytrade" class="off-tab">當沖</a><a href="#timing" class="off-tab">進出場時機</a><a href="#symbols" class="off-tab">標的</a><a href="#types" class="off-tab">交易類型</a><a href="#habits" class="off-tab">交易習慣</a>
+    <button type="button" class="grp" data-tab="acct">帳戶</button><a href="#accounts" class="off-tab">帳戶</a><a href="#detail" class="off-tab">明細</a>
   </nav>
 </aside>
 <div class="content">
@@ -436,26 +506,19 @@ a { color: var(--accent); }
     </div>
     <div class="kpis">
       <div class="kpi lead"><div class="k-l">台股總損益 · TWD</div><div class="k-v" data-source="tw_net" data-field="net" data-row="0">—</div><div class="k-s">已實現（含配息）＋未實現</div></div>
-      <div class="kpi lead"><div class="k-l">美股總損益 · USD</div><div class="k-v" data-source="us_net" data-field="net" data-row="0">—</div><div class="k-s">已實現（含配息）＋未實現</div></div>
       <div class="kpi"><div class="k-l">台股已實現</div><div class="k-v" data-source="kpi" data-field="total" data-where="currency=TWD">—</div><div class="k-s">勝率 <span data-source="kpi" data-field="win_rate" data-where="currency=TWD">—</span> · PF <span data-source="kpi" data-field="profit_factor" data-where="currency=TWD">—</span></div></div>
       <div class="kpi"><div class="k-l">台股未實現</div><div class="k-v" data-source="tw_net" data-field="unrealized" data-row="0">—</div><div class="k-s">持股成本 <span data-source="tw_net" data-field="cost" data-row="0">—</span></div></div>
+      <div class="kpi lead"><div class="k-l">美股總損益 · USD</div><div class="k-v" data-source="us_net" data-field="net" data-row="0">—</div><div class="k-s">已實現（含配息）＋未實現</div></div>
       <div class="kpi"><div class="k-l">美股已實現</div><div class="k-v" data-source="kpi" data-field="total" data-where="currency=USD">—</div><div class="k-s">勝率 <span data-source="kpi" data-field="win_rate" data-where="currency=USD">—</span> · PF <span data-source="kpi" data-field="profit_factor" data-where="currency=USD">—</span></div></div>
       <div class="kpi"><div class="k-l">美股未實現</div><div class="k-v" data-source="us_net" data-field="unrealized" data-row="0">—</div><div class="k-s">持股成本 <span data-source="us_net" data-field="cost" data-row="0">—</span></div></div>
     </div>
+    <div class="daybar">
+      <div class="day-h">最新收盤日變動 · DAY CHANGE</div>
+      <div class="day-grid" id="day-grid"></div>
+    </div>
     <div class="brief">
       <div class="brief-h">BRIEF · 摘要</div>
-      <p class="tr-take" id="takeaway">
-        台股累計已實現 <b><span data-source="kpi" data-field="total" data-where="currency=TWD" class="dash-skeleton">—</span> 元</b>
-        （勝率 <span data-source="kpi" data-field="win_rate" data-where="currency=TWD" class="dash-skeleton">—</span>），
-        美股 <b><span data-source="kpi" data-field="total" data-where="currency=USD" class="dash-skeleton">—</span> 美元</b>
-        （勝率 <span data-source="kpi" data-field="win_rate" data-where="currency=USD" class="dash-skeleton">—</span>）。
-        單一標的 <span data-source="top_share" data-field="name" data-row="0" class="dash-skeleton">—</span>
-        （<span data-source="top_share" data-field="symbol" data-row="0" class="dash-skeleton">—</span>）就貢獻了 <b><span data-source="top_share" data-field="pnl" data-row="0" class="dash-skeleton">—</span> 元</b>，
-        相當於台股已實現合計的 <span data-source="top_share" data-field="share_pct" data-row="0" class="dash-skeleton">—</span>。
-        台股已實現中有 00981A 配息 <span data-source="tw_net" data-field="dividends" data-row="0" class="dash-skeleton">—</span> 元；再加上台股庫存的預估未實現損益，台股合計約 <b><span data-source="tw_net" data-field="net" data-row="0" class="dash-skeleton">—</span> 元</b>。
-        台股獲利單平均抱 <span data-source="holding_summary" data-field="avg_days_win" data-where="currency=TWD" class="dash-skeleton">—</span> 天，
-        虧損單平均抱 <span data-source="holding_summary" data-field="avg_days_loss" data-where="currency=TWD" class="dash-skeleton">—</span> 天。
-      </p>
+      <p class="tr-take" id="takeaway"></p>
     </div>
   </div></section>
 
@@ -517,7 +580,18 @@ a { color: var(--accent); }
     </div>
   </div></section>
 
-  <section id="vs0050" class="band"><div class="wrap">
+  <section id="trend" class="band alt"><div class="wrap">
+    <h2>損益走勢</h2>
+    <div class="tr-legend"><span><i style="background:var(--up)"></i>獲利</span><span><i style="background:var(--down)"></i>虧損</span><span>（依台股慣例：紅漲綠跌）</span></div>
+    <div class="tr-grid" style="margin-top: var(--cds-gap-sm); grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr))">
+      <div class="tr-card"><h3>台股累積已實現損益（新台幣）</h3><p class="tr-note">依賣出日逐日累加。</p><div class="tr-chart" id="c-twd" data-source="cumulative"></div></div>
+      <div class="tr-card"><h3>美股累積已實現損益（美元）</h3><p class="tr-note">依賣出日逐日累加。</p><div class="tr-chart" id="c-usd" data-source="cumulative"></div></div>
+      <div class="tr-card"><h3>台股每月已實現損益</h3><p class="tr-note">以賣出日歸月；沒有交易的月份為 0。</p><div class="tr-chart" id="m-twd" data-source="monthly"></div></div>
+      <div class="tr-card"><h3>美股每月已實現損益</h3><p class="tr-note">以賣出日歸月；沒有交易的月份為 0。</p><div class="tr-chart" id="m-usd" data-source="monthly"></div></div>
+    </div>
+  </div></section>
+
+  <section id="vs0050" class="band tab-off"><div class="wrap">
     <h2>台股跟 0050 比</h2>
     <p class="tr-note" style="margin-top:0">對照方式：每筆台股交易的成本，假設在同一天改買 0050、同一天賣出（含 0050 期間配息）；庫存則假設持有 0050 到最新收盤日。資金投入的時間和金額都一樣，只換標的。</p>
     <div class="tr-grid">
@@ -573,7 +647,7 @@ a { color: var(--accent); }
     </div>
   </div></section>
 
-  <section id="vssoxx" class="band"><div class="wrap">
+  <section id="vssoxx" class="band tab-off"><div class="wrap">
     <h2>美股跟 SOXX 比</h2>
     <p class="tr-note" style="margin-top:0">對照方式：每筆美股交易的成本，假設在同一天改買 SOXX（iShares 半導體 ETF）、同一天賣出（含 SOXX 期間配息）。這裡只比已賣出的部位，還沒賣的美股庫存不列入。槓桿 ETF 的交易也算在內，但另外標出筆數與損益（見左下），因為槓桿部位的漲跌幅本來就比 SOXX 大，容易拉動整體比較。</p>
     <div class="tr-grid">
@@ -619,18 +693,7 @@ a { color: var(--accent); }
     </div>
   </div></section>
 
-  <section id="trend" class="band alt"><div class="wrap">
-    <h2>損益走勢</h2>
-    <div class="tr-legend"><span><i style="background:var(--up)"></i>獲利</span><span><i style="background:var(--down)"></i>虧損</span><span>（依台股慣例：紅漲綠跌）</span></div>
-    <div class="tr-grid" style="margin-top: var(--cds-gap-sm); grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr))">
-      <div class="tr-card"><h3>台股累積已實現損益（新台幣）</h3><p class="tr-note">依賣出日逐日累加。</p><div class="tr-chart" id="c-twd" data-source="cumulative"></div></div>
-      <div class="tr-card"><h3>美股累積已實現損益（美元）</h3><p class="tr-note">依賣出日逐日累加。</p><div class="tr-chart" id="c-usd" data-source="cumulative"></div></div>
-      <div class="tr-card"><h3>台股每月已實現損益</h3><p class="tr-note">以賣出日歸月；沒有交易的月份為 0。</p><div class="tr-chart" id="m-twd" data-source="monthly"></div></div>
-      <div class="tr-card"><h3>美股每月已實現損益</h3><p class="tr-note">以賣出日歸月；沒有交易的月份為 0。</p><div class="tr-chart" id="m-usd" data-source="monthly"></div></div>
-    </div>
-  </div></section>
-
-  <section id="open" class="band"><div class="wrap">
+  <section id="open" class="band tab-off"><div class="wrap">
     <h2>目前庫存與配息</h2>
     <div class="tr-grid" style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr))">
       <div class="tr-card" style="grid-column: 1 / -1">
@@ -698,7 +761,7 @@ a { color: var(--accent); }
     </div>
   </div></section>
 
-  <section id="dividends" class="band"><div class="wrap">
+  <section id="dividends" class="band tab-off"><div class="wrap">
     <div class="tr-card">
       <h3>配息紀錄</h3>
       <p class="tr-note">每次配息看「最後買進日」收盤時持有的股數，由成交紀錄推算。00981A 每季配息（3、6、9、12 月除息），配息金額已扣每次入帳的 10 元匯費。TSM（台積電 ADR）每股配息以美元計，計入美股合計的是持股 × 每股配息（美元）；口袋以台幣入帳，括號內是實際收到的台幣金額。</p>
@@ -717,7 +780,7 @@ a { color: var(--accent); }
     </div>
   </div></section>
 
-  <section id="leverage" class="band"><div class="wrap">
+  <section id="leverage" class="band tab-off"><div class="wrap">
     <h2>槓桿 ETF</h2>
     <p class="tr-note" style="margin-top:0">槓桿 ETF（leveraged ETF）每天收盤重新平衡（daily reset），追求的是「單日」漲跌的倍數。抱超過一天，報酬就不會剛好等於「原型標的累積漲跌 × 倍數」：盤整來回時通常會少（耗損），單邊趨勢時可能反而多。下面把你的價格報酬和「原型同期報酬 × 倍數」放在一起，差距就是複利效果加上追蹤誤差。這些交易照樣算進美股的已實現、未實現與總損益。</p>
     <div class="tr-card">
@@ -757,6 +820,12 @@ a { color: var(--accent); }
       <p class="tr-note" style="margin: 8px 0 0" data-source="lev_open_note" data-field="text" data-row="0"></p>
     </div>
     <div class="tr-card" style="margin-top: var(--cds-gap-md)">
+      <h3>走勢：槓桿 ETF vs 原型 × 倍數</h3>
+      <p class="tr-note">把你的買進價和當時的原型價格都設為 100，之後每個收盤日各畫一點。「原型 × 倍數」是原型累積漲跌直接乘上倍數；槓桿 ETF 的線若掉在它下面，落差就是每日重新平衡的耗損加上追蹤誤差。資料天數少的時候線會很短，之後每天自動多一點。</p>
+      <div class="tr-legend lev-legend"><span><i data-c="2"></i>槓桿 ETF（你持有的）</span><span><i data-c="0"></i>原型 × 倍數</span><span><i class="dash"></i>原型</span></div>
+      <div id="lev-charts"></div>
+    </div>
+    <div class="tr-card" style="margin-top: var(--cds-gap-md)">
       <h3>已賣出：你 vs 原型 × 倍數</h3>
       <div class="tr-tbl-wrap">
         <table id="lev-closed-table" data-source="lev_closed" data-row-key="symbol,pnl">
@@ -776,7 +845,7 @@ a { color: var(--accent); }
     </div>
   </div></section>
 
-  <section id="holding" class="band alt"><div class="wrap">
+  <section id="holding" class="band alt tab-off"><div class="wrap">
     <h2>持有期間</h2>
     <p class="tr-note" style="margin-top:0">持有天數 (holding period) 以先進先出 (FIFO) 把每筆賣出配對到之前的買進，依股數加權計算；當沖記為 0 天。</p>
     <div class="tr-grid">
@@ -817,7 +886,7 @@ a { color: var(--accent); }
     </div>
   </div></section>
 
-  <section id="daytrade" class="band"><div class="wrap">
+  <section id="daytrade" class="band tab-off"><div class="wrap">
     <h2>當沖</h2>
     <p class="tr-note" style="margin-top:0">同一天買進、同一天賣出的交易（券商標示「現股賣出(沖)」），全部在第一金。當沖的證交稅減半為 0.15%，但仍要付買賣兩邊的手續費。</p>
     <div class="tr-card">
@@ -861,7 +930,7 @@ a { color: var(--accent); }
     </div>
   </div></section>
 
-  <section id="timing" class="band"><div class="wrap">
+  <section id="timing" class="band tab-off"><div class="wrap">
     <h2>進出場時機</h2>
     <p class="tr-note" style="margin-top:0">把你的每一筆買進、賣出標在股價走勢上，並看賣出之後股價怎麼走。</p>
     <div class="tr-card">
@@ -909,7 +978,7 @@ a { color: var(--accent); }
     </div>
   </div></section>
 
-  <section id="symbols" class="band"><div class="wrap">
+  <section id="symbols" class="band tab-off"><div class="wrap">
     <h2>各標的貢獻</h2>
     <div class="tr-grid">
       <div class="tr-card"><h3>台股標的（新台幣）</h3><p class="tr-note">同一標的多次賣出合併計算。</p><div class="tr-chart" id="s-twd" data-source="by_symbol"></div></div>
@@ -939,7 +1008,7 @@ a { color: var(--accent); }
     </div>
   </div></section>
 
-  <section id="types" class="band alt"><div class="wrap">
+  <section id="types" class="band alt tab-off"><div class="wrap">
     <h2>交易類型</h2>
     <div class="tr-card">
       <p class="tr-note" style="margin-top:0">分類互斥：當沖指券商標示「現股賣出(沖)」的個股；占比是占台股總已實現損益的比例。</p>
@@ -976,7 +1045,7 @@ a { color: var(--accent); }
     </div>
   </div></section>
 
-  <section id="habits" class="band"><div class="wrap">
+  <section id="habits" class="band tab-off"><div class="wrap">
     <h2>交易習慣</h2>
     <div class="tr-card">
       <p class="tr-note" style="margin-top:0">每筆期望值 = 平均每筆已實現損益。連勝／連敗依賣出日期順序計算。週轉 = 期間內買進與賣出的成交金額合計。</p>
@@ -1002,7 +1071,7 @@ a { color: var(--accent); }
     </div>
   </div></section>
 
-  <section id="accounts" class="band alt"><div class="wrap">
+  <section id="accounts" class="band alt tab-off"><div class="wrap">
     <h2>各帳戶</h2>
     <div class="tr-grid">
       <div class="tr-card">
@@ -1024,7 +1093,7 @@ a { color: var(--accent); }
     </div>
   </div></section>
 
-  <section id="detail" class="band"><div class="wrap">
+  <section id="detail" class="band tab-off"><div class="wrap">
     <h2>全部交易明細</h2>
     <div class="tr-card">
       <input class="tr-search" id="q" type="search" placeholder="搜尋代號、名稱、帳戶、日期…">
@@ -1053,7 +1122,7 @@ a { color: var(--accent); }
 </main>
 <footer class="site-foot">
   <div class="wrap">
-    <div><strong>資料來源</strong>　交易紀錄：第一金證券、口袋證券（台股、美股）；0050 收盤價：臺灣證券交易所；SOXX 與美股收盤價：stockanalysis.com；配息：經濟日報、中央社、今周刊、工商時報、ETtoday、台積電投資人關係網站（TSM ADR）。</div>
+    <div><strong>資料來源</strong>　交易紀錄：第一金證券、口袋證券（台股、美股）；0050 與台股收盤價：富果（Fugle）行情 API、臺灣證券交易所；SOXX 與美股收盤價：Tiingo（較早的資料來自 stockanalysis.com）；配息：經濟日報、中央社、今周刊、工商時報、ETtoday、台積電投資人關係網站（TSM ADR）。</div>
     <div><strong>資料更新至</strong>　<span data-source="data_asof" data-field="date" data-row="0">—</span>（依最新收盤價或成交日期自動更新）</div>
   </div>
 </footer>
@@ -1423,17 +1492,20 @@ dash.calc('us_unrealized_series', {
 });
 
 dash.calc('us_unrealized_stats', {
-  inputs: ['us_unrealized_series'],
+  inputs: ['us_unrealized_series', 'holdings', 'fills'],
   title: '美股未實現損益摘要',
-  description: '美股未實現損益走勢中的最新值、最高與最低點，以及目前持股成本與檔數（依日期加總所有庫存）。',
-  fn: (rows) => {
+  description: '「最新」、目前持股成本與檔數取自目前的美股庫存（沒有庫存時為 0，日期為最後一筆成交日）；最高與最低點取自美股未實現損益走勢（依日期加總所有庫存）。',
+  fn: (rows, holdings, fills) => {
     const by = {}, r2 = (v) => Math.round(v * 100) / 100;
-    rows.forEach((r) => { (by[r.date] ||= { date: r.date, u: 0, cost: 0, syms: new Set() }); by[r.date].u += r.unrealized; by[r.date].cost += r.cost; if (r.symbol && r.shares > 0) by[r.date].syms.add(r.symbol); });
+    rows.forEach((r) => { (by[r.date] ||= { date: r.date, u: 0 }); by[r.date].u += r.unrealized; });
     const days = Object.values(by).sort((a, b) => a.date.localeCompare(b.date));
     if (!days.length) return [];
-    const last = days[days.length - 1];
-    const hi = days.reduce((a, b) => (b.u > a.u ? b : a)), lo = days.reduce((a, b) => (b.u < a.u ? b : a));
-    return [{ latest: r2(last.u), latest_date: last.date, max: r2(hi.u), max_date: hi.date, min: r2(lo.u), min_date: lo.date, cost: r2(last.cost), symbols: last.syms.size }];
+    const hs = holdings.filter((h) => h.currency === 'USD');
+    const lastFill = fills.filter((f) => f.currency === 'USD').map((f) => f.date).sort().pop() || '';
+    const now = { u: hs.reduce((a, h) => a + Number(h.est_pnl), 0), date: hs.length ? hs.map((h) => h.as_of).sort().pop() : [days[days.length - 1].date, lastFill].sort().pop() };
+    const all = [...days, now];
+    const hi = all.reduce((a, b) => (b.u > a.u ? b : a)), lo = all.reduce((a, b) => (b.u < a.u ? b : a));
+    return [{ latest: r2(now.u), latest_date: now.date, max: r2(hi.u), max_date: hi.date, min: r2(lo.u), min_date: lo.date, cost: r2(hs.reduce((a, h) => a + Number(h.cost), 0)), symbols: new Set(hs.map((h) => h.symbol)).size }];
   }
 });
 
@@ -1759,6 +1831,37 @@ dash.calc('lev_closed', {
   }
 });
 
+dash.calc('lev_chart', {
+  inputs: ['leveraged', 'holdings', 'fills', 'prices'],
+  title: '槓桿 ETF vs 原型 × 倍數（走勢）',
+  description: '每檔槓桿 ETF 庫存：把買進價（還沒賣掉的批次的加權均價）和當時的原型價格都設為 100，之後每個收盤日算出槓桿 ETF 的指數、「原型累積漲跌 × 倍數」的指數，以及原型本身的指數。',
+  fn: (leveraged, holdings, fills, prices) => {
+    const ref = levRef(fills, prices), out = [], r2 = (v) => Math.round(v * 100) / 100;
+    leveraged.forEach((L) => {
+      if (!holdings.find((x) => x.symbol === L.symbol)) return;
+      const lots = [];
+      fills.filter((f) => f.symbol === L.symbol).sort((a, b) => a.date.localeCompare(b.date) || (a.side === '買進' ? -1 : 1)).forEach((f) => {
+        let n = Number(f.shares);
+        if (f.side === '買進') lots.push({ date: f.date, shares: n, price: Number(f.price) });
+        else while (n > 1e-9 && lots.length) { const t = Math.min(n, lots[0].shares); lots[0].shares -= t; n -= t; if (lots[0].shares <= 1e-9) lots.shift(); }
+      });
+      if (!lots.length) return;
+      const lev = Number(L.leverage), sh = lots.reduce((s, l) => s + l.shares, 0), base = lots.reduce((s, l) => s + l.shares * l.price, 0) / sh;
+      let ub = 0, uw = 0;
+      lots.forEach((l) => { const s = ref.at(L.underlying, l.date, false); if (s) { ub += l.shares * l.price * s.price; uw += l.shares * l.price; } });
+      if (!uw) return;
+      ub /= uw;
+      const first = lots[0].date, uc = {};
+      prices.forEach((p) => { if (p.symbol === L.underlying) uc[p.date] = p.close; });
+      const row = (label, date, etf, ur) => out.push({ id: L.symbol + '|' + label, symbol: L.symbol, underlying: L.underlying, lev, label, date, etf: r2(etf), target: r2((1 + lev * ur) * 100), und: r2((1 + ur) * 100) });
+      row('買進', first, 100, 0);
+      prices.filter((p) => p.symbol === L.symbol && p.date >= first && uc[p.date] != null).sort((a, b) => a.date.localeCompare(b.date))
+        .forEach((p) => row(p.date.slice(5).replace('-', '/'), p.date, p.close / base * 100, uc[p.date] / ub - 1));
+    });
+    return out;
+  }
+});
+
 dash.calc('lev_summary', {
   inputs: ['lev_open', 'lev_closed'],
   title: '槓桿 ETF 總覽',
@@ -1878,17 +1981,20 @@ dash.calc('unrealized_series', {
 });
 
 dash.calc('unrealized_stats', {
-  inputs: ['unrealized_series'],
+  inputs: ['unrealized_series', 'holdings', 'fills'],
   title: '台股未實現損益摘要',
-  description: '台股未實現損益走勢中的最新值、最高與最低點，以及目前持股成本與檔數（依日期加總所有持股）。',
-  fn: (rows) => {
+  description: '「最新」、目前持股成本與檔數取自目前的台股庫存（沒有庫存時為 0，日期為最後一筆成交日）；最高與最低點取自台股未實現損益走勢（依日期加總所有持股）。',
+  fn: (rows, holdings, fills) => {
     const by = {};
-    rows.forEach((r) => { (by[r.date] ||= { date: r.date, u: 0, cost: 0, syms: new Set() }); by[r.date].u += r.unrealized; by[r.date].cost += r.cost; if (r.symbol && r.shares > 0) by[r.date].syms.add(r.symbol); });
+    rows.forEach((r) => { (by[r.date] ||= { date: r.date, u: 0 }); by[r.date].u += r.unrealized; });
     const days = Object.values(by).sort((a, b) => a.date.localeCompare(b.date));
     if (!days.length) return [];
-    const last = days[days.length - 1];
-    const hi = days.reduce((a, b) => (b.u > a.u ? b : a)), lo = days.reduce((a, b) => (b.u < a.u ? b : a));
-    return [{ latest: last.u, latest_date: last.date, max: hi.u, max_date: hi.date, min: lo.u, min_date: lo.date, cost: last.cost, symbols: last.syms.size }];
+    const hs = holdings.filter((h) => h.currency === 'TWD');
+    const lastFill = fills.filter((f) => f.currency === 'TWD').map((f) => f.date).sort().pop() || '';
+    const now = { u: hs.reduce((a, h) => a + Number(h.est_pnl), 0), date: hs.length ? hs.map((h) => h.as_of).sort().pop() : [days[days.length - 1].date, lastFill].sort().pop() };
+    const all = [...days, now];
+    const hi = all.reduce((a, b) => (b.u > a.u ? b : a)), lo = all.reduce((a, b) => (b.u < a.u ? b : a));
+    return [{ latest: now.u, latest_date: now.date, max: hi.u, max_date: hi.date, min: lo.u, min_date: lo.date, cost: hs.reduce((a, h) => a + Number(h.cost), 0), symbols: new Set(hs.map((h) => h.symbol)).size }];
   }
 });
 
@@ -2104,10 +2210,66 @@ dash.calc('equity_stats', {
   }).filter(Boolean)
 });
 
+// ---------- brief, day change ----------
+dash.calc('brief', {
+  inputs: ['kpi', 'tw_net', 'us_net', 'holdings', 'by_symbol', 'holding_summary', 'lev_summary'],
+  title: '摘要文字',
+  description: '最上方的摘要：台股與美股各自的已實現（含配息）、庫存檔數與預估未實現、合計，台股賺最多與賠最多的標的，以及獲利單與虧損單的平均持有天數。',
+  fn: (kpi, tw_net, us_net, holdings, by_symbol, holding_summary, lev_summary) => {
+    const seg = [], t = (s) => seg.push({ t: s, b: false }), b = (s) => seg.push({ t: s, b: true });
+    const sg = (v, cur) => { const n = Number(v), a = Math.abs(n); return (n > 0 ? '+' : n < 0 ? '−' : '') + (cur === 'USD' ? a.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : Math.round(a).toLocaleString('en-US')); };
+    const market = (cur, label, unit, net) => {
+      const k = kpi.find((x) => x.currency === cur), n = net[0], hs = holdings.filter((h) => h.currency === cur);
+      if (!k || !n) return;
+      t(`${label}已實現 `); b(`${sg(n.realized, cur)} ${unit}`);
+      t(`（勝率 ${Number(k.win_rate).toFixed(1)}%${n.dividends ? `，含配息 ${sg(n.dividends, cur)}` : ''}）`);
+      if (hs.length) { t(`，庫存 ${hs.length} 檔、預估未實現 `); b(`${sg(n.unrealized, cur)} ${unit}`); t('，合計 '); b(`${sg(n.net, cur)} ${unit}`); }
+      else t('，目前沒有庫存');
+      if (cur === 'USD' && lev_summary[0] && lev_summary[0].open) t(`；其中槓桿 ETF ${lev_summary[0].open} 檔，未實現 ${sg(lev_summary[0].unrealized, 'USD')} ${unit}`);
+      t('。');
+    };
+    market('TWD', '台股', '元', tw_net);
+    market('USD', '美股', '美元', us_net);
+    const tw = by_symbol.filter((s) => s.currency === 'TWD');
+    if (tw.length > 1) {
+      const top = tw[0], bot = tw[tw.length - 1];
+      t(`台股賺最多的是 ${top.name}（${top.symbol}）`); b(`${sg(top.pnl, 'TWD')} 元`);
+      if (bot.pnl < 0) { t(`，賠最多的是 ${bot.name}（${bot.symbol}）`); b(`${sg(bot.pnl, 'TWD')} 元`); }
+      t('。');
+    }
+    const days = (cur, label) => { const h = holding_summary.find((x) => x.currency === cur); return h && h.avg_days_win != null && h.avg_days_loss != null ? `${label}獲利單平均抱 ${h.avg_days_win} 天、虧損單 ${h.avg_days_loss} 天` : null; };
+    const d = [days('TWD', '台股'), days('USD', '美股')].filter(Boolean);
+    if (d.length) t(d.join('；') + '。');
+    return seg;
+  }
+});
+
+dash.calc('day_change', {
+  inputs: ['equity', 'unrealized_series', 'us_unrealized_series', 'prices'],
+  title: '最新收盤日變動',
+  description: '每個市場最新收盤日的總損益，減去前一個交易日的總損益，拆成已實現（含配息）與未實現的變動；並列出當天收盤時持有的每檔標的：收盤價、相對前一個收盤價的漲跌幅，以及這檔未實現損益的變動（當天才買進的，是相對買進成本）。',
+  fn: (equity, tw, us, prices) => ['TWD', 'USD'].map((cur) => {
+    const r = equity.filter((e) => e.currency === cur);
+    if (r.length < 2) return null;
+    const a = r[r.length - 1], p = r[r.length - 2], r2 = (v) => Math.round(v * 100) / 100;
+    const ser = cur === 'TWD' ? tw : us;
+    const agg = (d) => { const m = {}; ser.filter((x) => x.date === d && x.symbol && x.shares > 0).forEach((x) => { const o = (m[x.symbol] ||= { u: 0, close: x.close }); o.u += x.unrealized; }); return m; };
+    const now = agg(a.date), was = agg(p.date);
+    const items = Object.keys(now).map((sym) => {
+      let prev = null;
+      prices.forEach((q) => { if (q.symbol === sym && q.date < a.date && (!prev || q.date > prev.date)) prev = q; });
+      return { symbol: sym, close: now[sym].close, pct: prev && prev.close ? Math.round((now[sym].close / prev.close - 1) * 10000) / 100 : null, chg: r2(now[sym].u - (was[sym] ? was[sym].u : 0)), fresh: !was[sym] };
+    }).sort((x, y) => Math.abs(y.chg) - Math.abs(x.chg));
+    return { currency: cur, date: a.date, prev_date: p.date, total: r2(a.total - p.total), realized: r2(a.realized + a.dividends - p.realized - p.dividends), unrealized: r2(a.unrealized - p.unrealized), items };
+  }).filter(Boolean)
+});
+
 // ---------- helpers ----------
 const ok = (id) => dash.data(id).status === 'ok';
 const fInt = d3.format(',');
 const f2 = d3.format(',.2f');
+const priceFmt = d3.format(',.2~f');
+const qtyFmt = d3.format(',.4~f');
 const signed = (v, cur) => { const n = Number(v); const s = cur === 'USD' ? f2(Math.abs(n)) : fInt(Math.round(Math.abs(n))); return (n > 0 ? '+' : n < 0 ? '−' : '') + s; };
 const pct = (v) => { const n = Number(v); return (n > 0 ? '+' : n < 0 ? '−' : '') + Math.abs(n).toFixed(2) + '%'; };
 const tone = (el, v) => { el.classList.toggle('up', Number(v) > 0); el.classList.toggle('down', Number(v) < 0); };
@@ -2355,6 +2517,55 @@ function drawCompare(el, rows, cur = 'TWD', benchName = '0050') {
       series.forEach((s, i) => dots[i].attr('cx', x(d.t)).attr('cy', y(d[s.k])).style('opacity', 1));
       const u = cur === 'USD' ? '美元' : '元';
       tt.show(ev, [d.date.replaceAll('-', '/'), `你 ${signed(d.mine, cur)} ${u}`, `${benchName} ${signed(d.bench, cur)} ${u}`]);
+    })
+    .on('mouseleave', () => { dots.forEach((c) => c.style('opacity', 0)); tt.hide(); });
+}
+
+function drawLev(el, rows) {
+  el.innerHTML = '';
+  if (!rows.length) return;
+  const W = el.clientWidth || 600, H = 240, m = rows[0];
+  const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
+  const series = [
+    { k: 'und', name: m.underlying, color: 'var(--color-fg-muted)', dash: '4 4', w: 1.5 },
+    { k: 'target', name: `${m.underlying} × ${m.lev}`, color: dash.colors[0], w: 2 },
+    { k: 'etf', name: m.symbol, color: dash.colors[2], w: 2.5 }
+  ];
+  const vals = rows.flatMap((d) => series.map((s) => d[s.k]));
+  const y = d3.scaleLinear([Math.min(100, d3.min(vals)), Math.max(100, d3.max(vals))], [H - 28, 14]).nice();
+  const yt = y.ticks(4), tf = d3.format(',');
+  const ml = measure(svg, yt.map(tf), 'tr-tick') + 8;
+  const last = rows[rows.length - 1];
+  const labels = series.map((s) => `${s.name} ${last[s.k].toFixed(1)}`);
+  const mr = measure(svg, labels, 'tr-lab') + 14;
+  const x = d3.scalePoint(rows.map((d, i) => i), [ml + 6, W - mr]);
+  svg.append('g').selectAll('line').data(yt).join('line').attr('x1', ml).attr('x2', W - mr).attr('y1', (d) => y(d)).attr('y2', (d) => y(d))
+    .attr('stroke', (d) => (d === 100 ? 'var(--cds-chart-axis)' : 'var(--cds-chart-grid)'));
+  svg.append('g').selectAll('text').data(yt).join('text').attr('class', 'tr-tick').attr('x', ml - 6).attr('y', (d) => y(d)).attr('dy', '0.32em').attr('text-anchor', 'end').text(tf);
+  const step = Math.max(1, Math.ceil(rows.length / Math.max(2, Math.floor((W - ml - mr) / 64))));
+  svg.append('g').selectAll('text').data(rows.map((d, i) => ({ d, i })).filter((o) => o.i % step === 0)).join('text').attr('class', 'tr-tick')
+    .attr('x', (o) => x(o.i)).attr('y', H - 8).attr('text-anchor', (o) => (o.i === 0 ? 'start' : 'middle')).text((o) => o.d.label);
+  series.forEach((s) => svg.append('path').datum(rows).attr('fill', 'none').attr('stroke', s.color).attr('stroke-width', s.w).attr('stroke-dasharray', s.dash || null)
+    .attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round').attr('d', d3.line().x((d, i) => x(i)).y((d) => y(d[s.k]))));
+  // end labels, pushed apart so they never overlap
+  const ends = series.map((s, i) => ({ s, i, y: y(last[s.k]) })).sort((a, b) => a.y - b.y);
+  for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 14) ends[i].y = ends[i - 1].y + 14;
+  const over = ends[ends.length - 1].y - (H - 30);
+  if (over > 0) ends.forEach((e) => { e.y -= over; });
+  ends.forEach((e) => {
+    svg.append('circle').attr('cx', x(rows.length - 1)).attr('cy', y(last[e.s.k])).attr('r', 3.5).attr('fill', e.s.color);
+    svg.append('text').attr('class', 'tr-lab').attr('x', x(rows.length - 1) + 8).attr('y', e.y).attr('dy', '0.32em').text(labels[e.i]);
+  });
+  const tt = tooltip(el.closest('.tr-card'));
+  const dots = series.map((s) => svg.append('circle').attr('r', 4).attr('fill', s.color).style('opacity', 0));
+  const sp = (v) => (v >= 100 ? '+' : '−') + Math.abs(v - 100).toFixed(1) + '%';
+  svg.append('rect').attr('x', ml).attr('y', 0).attr('width', W - ml - mr + 8).attr('height', H).attr('fill', 'transparent')
+    .on('mousemove', (ev) => {
+      const [mx] = d3.pointer(ev);
+      let bi = 0; rows.forEach((d, i) => { if (Math.abs(x(i) - mx) < Math.abs(x(bi) - mx)) bi = i; });
+      const d = rows[bi];
+      series.forEach((s, i) => dots[i].attr('cx', x(bi)).attr('cy', y(d[s.k])).style('opacity', 1));
+      tt.show(ev, [bi === 0 ? `${d.date.replaceAll('-', '/')} 買進（= 100）` : `${d.date.replaceAll('-', '/')} 收盤`, `${m.symbol} ${d.etf.toFixed(1)}（${sp(d.etf)}）`, `${m.underlying} × ${m.lev} ${d.target.toFixed(1)}（${sp(d.target)}）`, `${m.underlying} ${d.und.toFixed(1)}（${sp(d.und)}）`]);
     })
     .on('mouseleave', () => { dots.forEach((c) => c.style('opacity', 0)); tt.hide(); });
 }
@@ -2670,12 +2881,18 @@ function drawTiming() {
 function renderTable(table, rows, cols, keyOf) {
   const tb = table.querySelector('tbody');
   tb.innerHTML = '';
+  // the symbol column (or the first one) stays in view on phones while the table scrolls sideways
+  const ths = [...table.querySelectorAll('thead th')];
+  let si = ths.findIndex((th) => th.getAttribute('data-field') === 'symbol');
+  if (si < 0) si = 0;
+  ths.forEach((th, i) => th.classList.toggle('stick', i === si));
   rows.forEach((r) => {
     const tr = document.createElement('tr');
     tr.setAttribute('data-key', keyOf(r));
-    cols.forEach((c) => {
+    cols.forEach((c, ci) => {
       const td = document.createElement('td');
       if (c.num) td.className = 'num';
+      if (ci === si) td.classList.add('stick');
       td.textContent = c.fmt ? c.fmt(r[c.f], r) : (r[c.f] ?? '');
       if (c.tone) tone(td, r[c.f]);
       tr.appendChild(td);
@@ -2720,7 +2937,7 @@ function drawTrades() {
   table.querySelectorAll('th').forEach((th) => th.setAttribute('aria-sort', th.getAttribute('data-field') === sortKey ? (sortDir > 0 ? 'ascending' : 'descending') : 'none'));
   renderTable(table, rows, [
     { f: 'date' }, { f: 'account' }, { f: 'symbol' }, { f: 'name' }, { f: 'category' },
-    { f: 'shares', num: true }, { f: 'price', num: true },
+    { f: 'shares', num: true, fmt: (v) => qtyFmt(v) }, { f: 'price', num: true, fmt: (v) => qtyFmt(v) },
     { f: 'pnl', num: true, tone: true, fmt: (v, r) => signed(v, r.currency) },
     { f: 'pct', num: true, tone: true, fmt: (v) => pct(v) },
     { f: 'currency' },
@@ -2916,7 +3133,7 @@ dash.onData(() => {
     renderTable(asT, dash.data('after_sell').data, [
       { f: 'date' }, { f: 'symbol' }, { f: 'name' },
       { f: 'shares', num: true, fmt: (v) => (v >= 1 ? fInt(v) : String(v)) },
-      { f: 'sell_price', num: true },
+      { f: 'sell_price', num: true, fmt: (v, r) => (r.currency === 'USD' ? f2(v) : priceFmt(v)) },
       { f: 'pct5', num: true, tone: true, fmt: (v) => (v == null ? '' : pct(v)) },
       { f: 'pct20', num: true, tone: true, fmt: (v) => (v == null ? '' : pct(v)) },
       { f: 'pct60', num: true, tone: true, fmt: (v) => (v == null ? '' : pct(v)) }
@@ -3005,6 +3222,39 @@ dash.onData(() => {
     if (ok('bench_us_symbol')) drawSymbols(el, dash.data('bench_us_symbol').data.map((d) => ({ ...d, pnl: d.excess })), 'USD', '超額損益');
     else if (dash.data('bench_us_symbol').status !== 'loading') failBox(el); else el.innerHTML = ''; }
 
+  // brief
+  { const el = document.getElementById('takeaway');
+    if (el && ok('brief')) { el.innerHTML = ''; dash.data('brief').data.forEach((s) => { const n = document.createElement(s.b ? 'b' : 'span'); n.textContent = s.t; el.appendChild(n); }); } }
+
+  // latest-close day change
+  { const box = document.getElementById('day-grid');
+    if (box && ok('day_change')) {
+      box.innerHTML = '';
+      const mk = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+      const md = (d) => d.slice(5).replace('-', '/');
+      dash.data('day_change').data.forEach((r) => {
+        const cur = r.currency, m = mk('div', 'day-m');
+        const top = mk('div', 'day-top');
+        top.append(mk('span', 'day-mkt', cur === 'USD' ? '美股' : '台股'), mk('span', 'day-date', `${md(r.date)} 收盤 · 對 ${md(r.prev_date)}`));
+        const v = mk('div', 'day-v', signed(r.total, cur)); tone(v, r.total); v.append(mk('small', '', cur === 'USD' ? '美元' : '元'));
+        const s = mk('div', 'day-s');
+        s.append('已實現 ', mk('span', '', signed(r.realized, cur) || '0'), ' · 未實現 ', mk('span', '', signed(r.unrealized, cur) || '0'));
+        m.append(top, v, s);
+        if (r.items.length) {
+          const chips = mk('div', 'day-chips');
+          r.items.forEach((it) => {
+            const c = mk('span', 'day-chip');
+            c.append(mk('b', '', it.symbol), mk('span', 'px', cur === 'USD' ? f2(it.close) : priceFmt(it.close)));
+            if (it.pct != null) c.append(mk('span', 'px', `（${pct(it.pct)}）`));
+            const g = mk('span', '', signed(it.chg, cur) + (it.fresh ? '（新買進）' : '')); tone(g, it.chg); c.append(g);
+            chips.append(c);
+          });
+          m.append(chips);
+        } else m.append(mk('div', 'day-none', '當天收盤沒有庫存。'));
+        box.append(m);
+      });
+    } }
+
   // leveraged ETFs
   const levPct = (v) => (v == null ? '—' : pct(v));
   fillMarks('lev_summary', (f, v) => (v == null ? '—' : f === 'open' || f === 'closed' ? String(v) : f === 'max_days' ? v + ' 天' : f === 'cost' || f === 'market_value' ? 'US$' + f2(v) : signed(v, 'USD')));
@@ -3027,6 +3277,19 @@ dash.onData(() => {
     { f: 'px_ret', num: true, tone: true, fmt: levPct }, { f: 'target', num: true, tone: true, fmt: levPct }, { f: 'gap', num: true, tone: true, fmt: levPct },
     { f: 'days', num: true, fmt: (v) => (v == null ? '—' : String(v)) }
   ], (r) => `${enc(r.symbol)},${enc(r.pnl)}`); levEmpty(lvC, 9, '還沒有已賣出的槓桿 ETF 交易。'); } else if (dash.data('lev_closed').status !== 'loading') tableFail(lvC, 9);
+
+  { const box = document.getElementById('lev-charts');
+    if (box && ok('lev_chart')) {
+      const rows = dash.data('lev_chart').data, syms = [...new Set(rows.map((r) => r.symbol))];
+      box.innerHTML = '';
+      if (!syms.length) { const p = document.createElement('p'); p.className = 'tr-note'; p.textContent = '目前沒有槓桿 ETF 庫存。'; box.append(p); }
+      syms.forEach((s) => {
+        if (syms.length > 1) { const t = document.createElement('div'); t.className = 'lev-chart-t'; t.textContent = s; box.append(t); }
+        const c = document.createElement('div'); c.className = 'tr-chart'; c.style.minHeight = '240px'; box.append(c);
+        drawLev(c, rows.filter((r) => r.symbol === s));
+      });
+      document.querySelectorAll('.lev-legend i[data-c]').forEach((i) => { i.style.background = dash.colors[Number(i.getAttribute('data-c'))]; });
+    } }
 
   // trend, distribution, habits, symbols
   [['c-twd', 'TWD'], ['c-usd', 'USD']].forEach(([id, cur]) => {
@@ -3083,28 +3346,26 @@ dash.onData(() => {
 });
 
 // section navigation
-const goTo = (id) => { const el = document.getElementById(id); if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); dash.setLink(id); } };
+const goTo = (id) => { if (window.trGo) window.trGo(id, true); };
 document.querySelectorAll('.tr-nav button').forEach((b) => b.addEventListener('click', () => goTo(b.getAttribute('data-go'))));
-let linked = false;
-dash.onData(() => {
-  if (linked || !ok('trades')) return;
-  linked = true;
-  const named = location.hash.slice(1);
-  if (named && document.getElementById(named)) requestAnimationFrame(() => document.getElementById(named).scrollIntoView());
-});
 </script>
 <script>
 (function () {
+  const TABS = { perf: ['top', 'overview', 'equity', 'trend'], bench: ['vs0050', 'vssoxx'], pos: ['open', 'dividends', 'leverage', 'holding'], ana: ['daytrade', 'timing', 'symbols', 'types', 'habits'], acct: ['accounts', 'detail'] };
+  const tabOf = {};
+  Object.entries(TABS).forEach(([t, ids]) => ids.forEach((id) => { tabOf[id] = t; }));
   const links = [...document.querySelectorAll('.site-nav a')];
   const nav = document.querySelector('.site-nav');
   const byId = Object.fromEntries(links.map((a) => [a.getAttribute('href').slice(1), a]));
+  const tabBtns = [...document.querySelectorAll('.tabbar button, .site-nav button.grp')];
   const setActive = (id) => links.forEach((a) => a.setAttribute('aria-current', a === byId[id] ? 'true' : 'false'));
   const sections = Object.keys(byId).map((id) => document.getElementById(id)).filter(Boolean);
-  let last = null;
+  let last = null, active = null;
   const onScroll = () => {
     const y = window.scrollY + 140;
-    let cur = sections.length ? sections[0].id : null;
-    sections.forEach((s) => { if (s.getBoundingClientRect().top + window.scrollY <= y) cur = s.id; });
+    const vis = sections.filter((s) => !s.classList.contains('tab-off'));
+    let cur = vis.length ? vis[0].id : null;
+    vis.forEach((s) => { if (s.getBoundingClientRect().top + window.scrollY <= y) cur = s.id; });
     if (cur !== last) {
       last = cur;
       setActive(cur);
@@ -3117,6 +3378,34 @@ dash.onData(() => {
     }
     document.querySelector('.totop').hidden = window.scrollY < 600;
   };
+  const show = (tab) => {
+    if (!TABS[tab] || tab === active) return false;
+    active = tab;
+    Object.entries(TABS).forEach(([t, ids]) => ids.forEach((id) => { const s = document.getElementById(id); if (s) s.classList.toggle('tab-off', t !== tab); }));
+    tabBtns.forEach((b) => { const on = b.getAttribute('data-tab') === tab; b.classList.toggle('on', on); if (b.getAttribute('role') === 'tab') b.setAttribute('aria-selected', on ? 'true' : 'false'); });
+    links.forEach((a) => a.classList.toggle('off-tab', tabOf[a.getAttribute('href').slice(1)] !== tab));
+    const tb = document.querySelector('.tabbar button[aria-selected="true"]');
+    if (tb && tb.parentElement.scrollWidth > tb.parentElement.clientWidth) tb.parentElement.scrollLeft = tb.offsetLeft - 12;
+    last = null;
+    return true;
+  };
+  const go = (id, smooth) => {
+    const tab = tabOf[id], el = document.getElementById(id);
+    if (!tab || !el) return false;
+    const switched = show(tab), how = switched || !smooth ? 'instant' : 'smooth';
+    if (TABS[tab][0] === id) window.scrollTo({ top: 0, behavior: how }); else el.scrollIntoView({ behavior: how, block: 'start' });
+    try { history.replaceState(null, '', '#' + id); } catch (e) {}
+    onScroll();
+    return true;
+  };
+  window.trGo = go;
+  tabBtns.forEach((b) => b.addEventListener('click', () => go(TABS[b.getAttribute('data-tab')][0], false)));
+  links.forEach((a) => a.addEventListener('click', (ev) => { ev.preventDefault(); go(a.getAttribute('href').slice(1), true); }));
+  document.querySelectorAll('a.brand, a.totop').forEach((a) => a.addEventListener('click', (ev) => { ev.preventDefault(); if (active === 'perf') window.scrollTo({ top: 0, behavior: 'smooth' }); else if (a.classList.contains('brand')) go('top', false); else window.scrollTo({ top: 0, behavior: 'smooth' }); }));
+  window.addEventListener('hashchange', () => { const id = location.hash.slice(1); if (tabOf[id]) go(id, false); });
+  const named = location.hash.slice(1);
+  show(tabOf[named] || 'perf');
+  if (tabOf[named] && TABS[tabOf[named]][0] !== named) requestAnimationFrame(() => { const el = document.getElementById(named); if (el) el.scrollIntoView({ behavior: 'instant', block: 'start' }); });
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', () => { last = null; onScroll(); });
   onScroll();
@@ -3163,6 +3452,7 @@ dash.onData(() => {
       tick = false;
       pending = pending.filter((c) => {
         if (c.classList.contains('in')) return false;
+        if (c.closest('.tab-off')) return true;
         if (c.getBoundingClientRect().top < innerHeight) { io.unobserve(c); c.classList.add('in'); return false; }
         return true;
       });
