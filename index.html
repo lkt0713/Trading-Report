@@ -795,7 +795,7 @@ a { color: var(--accent); }
     </div>
     <div class="tr-card" style="margin-top: var(--cds-gap-md)">
       <h3>庫存：你 vs 原型 × 倍數</h3>
-      <p class="tr-note">價格報酬 = 最新價 ÷ 你的成交均價 − 1（不含手續費；含手續費的是「實際報酬」）。原型價格：同一天你若有原型的成交（例如 11/09 盤前賣出 AXTI）就用成交價，否則用當天收盤價；庫存用最新收盤價。持有超過 20 天會在「提醒」標出來，因為抱越久，耗損通常越明顯。</p>
+      <p class="tr-note">價格報酬 = 最新價 ÷ 你的成交均價 − 1（不含手續費；含手續費的是「實際報酬」）。原型的起點是你成交當下的原型價格：槓桿 ETF 的單日漲跌約是原型的倍數，所以用你的成交價和兩者前一天的收盤推算（例如 11/10 AAOX 1.57 對應 AAOI 約 47.0）；庫存的終點用最新收盤價。持有超過 20 天會在「提醒」標出來，因為抱越久，耗損通常越明顯。</p>
       <div class="tr-tbl-wrap">
         <table id="lev-open-table" data-source="lev_open" data-row-key="symbol">
           <thead><tr>
@@ -1766,6 +1766,16 @@ const levRef = (fills, prices) => {
       if (c != null) return { price: c, how: '收盤' };
       const l = lastClose(sym, d);
       return l ? { price: l.price, how: l.date + ' 收盤' } : null;
+    },
+    // 你成交當下的原型價格：槓桿 ETF 追蹤的是「相對前一天收盤」的單日漲跌 × 倍數，
+    // 所以 原型價 ≈ 原型前一天收盤 × (1 + (你的成交價 ÷ ETF 前一天收盤 − 1) ÷ 倍數)。
+    // 找不到兩者共同的前一個收盤日時，退回 at()（同一天的原型成交價，或當天收盤）。
+    implied(L, d, etfPrice) {
+      const e = close[L.symbol] || {}, u = close[L.underlying] || {};
+      let prev = null;
+      Object.keys(e).forEach((k) => { if (k < d && u[k] != null && (!prev || k > prev)) prev = k; });
+      if (prev && etfPrice > 0) return { price: u[prev] * (1 + (etfPrice / e[prev] - 1) / Number(L.leverage)), how: '由成交價推算' };
+      return this.at(L.underlying, d, false);
     }
   };
 };
@@ -1790,9 +1800,9 @@ dash.calc('lev_open', {
       const sh = Number(h.shares), last = Number(h.market_value) / sh, lev = Number(L.leverage);
       const paid = lots.reduce((s, l) => s + l.shares * l.price, 0);
       const pxRet = paid ? (last * sh) / paid - 1 : null;
-      const end = ref.at(L.underlying, h.as_of, /^依收盤價/.test(h.source || ''));
+      const end = /^依收盤價/.test(h.source || '') ? ref.at(L.underlying, h.as_of, true) : ref.implied(L, h.as_of, last);
       let undRet = null, w = 0, acc = 0;
-      if (end) lots.forEach((l) => { const s = ref.at(L.underlying, l.date, false); if (s) { acc += l.shares * l.price * (end.price / s.price - 1); w += l.shares * l.price; } });
+      if (end) lots.forEach((l) => { const s = ref.implied(L, l.date, l.price); if (s) { acc += l.shares * l.price * (end.price / s.price - 1); w += l.shares * l.price; } });
       if (w) undRet = acc / w;
       const first = lots.length ? lots[0].date : null, days = first ? levDays(first, today) : null;
       const r4 = (v) => (v == null ? null : Math.round(v * 10000) / 100);
@@ -1822,9 +1832,9 @@ dash.calc('lev_closed', {
       const sh = Number(t.shares || 0), sell = Number(t.price || 0);
       const paid = h.lots.reduce((s, l) => s + l.shares * l.price, 0);
       const pxRet = paid ? (sell * sh) / paid - 1 : null;
-      const end = ref.at(L.underlying, h.date, false);
+      const end = ref.implied(L, h.date, sell);
       let w = 0, acc = 0;
-      if (end) h.lots.forEach((l) => { const s = ref.at(L.underlying, l.date, false); if (s) { acc += l.shares * l.price * (end.price / s.price - 1); w += l.shares * l.price; } });
+      if (end) h.lots.forEach((l) => { const s = ref.implied(L, l.date, l.price); if (s) { acc += l.shares * l.price * (end.price / s.price - 1); w += l.shares * l.price; } });
       const undRet = w ? acc / w : null;
       return { date: h.date, symbol: h.symbol, shares: sh, pnl: h.pnl, pct: h.pct, px_ret: r4(pxRet), target: undRet == null ? null : r4(undRet * lev), gap: pxRet == null || undRet == null ? null : r4(pxRet - undRet * lev), days: h.holding_days };
     });
@@ -1848,7 +1858,7 @@ dash.calc('lev_chart', {
       if (!lots.length) return;
       const lev = Number(L.leverage), sh = lots.reduce((s, l) => s + l.shares, 0), base = lots.reduce((s, l) => s + l.shares * l.price, 0) / sh;
       let ub = 0, uw = 0;
-      lots.forEach((l) => { const s = ref.at(L.underlying, l.date, false); if (s) { ub += l.shares * l.price * s.price; uw += l.shares * l.price; } });
+      lots.forEach((l) => { const s = ref.implied(L, l.date, l.price); if (s) { ub += l.shares * l.price * s.price; uw += l.shares * l.price; } });
       if (!uw) return;
       ub /= uw;
       const first = lots[0].date, uc = {};
@@ -2549,9 +2559,9 @@ function drawLev(el, rows) {
     .attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round').attr('d', d3.line().x((d, i) => x(i)).y((d) => y(d[s.k]))));
   // end labels, pushed apart so they never overlap
   const ends = series.map((s, i) => ({ s, i, y: y(last[s.k]) })).sort((a, b) => a.y - b.y);
-  for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 14) ends[i].y = ends[i - 1].y + 14;
-  const over = ends[ends.length - 1].y - (H - 30);
-  if (over > 0) ends.forEach((e) => { e.y -= over; });
+  // spread labels 14px apart, then keep them inside the plot: push down from the top, then back up from the bottom
+  for (let i = 0; i < ends.length; i++) ends[i].y = Math.max(ends[i].y, i ? ends[i - 1].y + 14 : 10);
+  for (let i = ends.length - 1; i >= 0; i--) ends[i].y = Math.min(ends[i].y, i < ends.length - 1 ? ends[i + 1].y - 14 : H - 30);
   ends.forEach((e) => {
     svg.append('circle').attr('cx', x(rows.length - 1)).attr('cy', y(last[e.s.k])).attr('r', 3.5).attr('fill', e.s.color);
     svg.append('text').attr('class', 'tr-lab').attr('x', x(rows.length - 1) + 8).attr('y', e.y).attr('dy', '0.32em').text(labels[e.i]);
