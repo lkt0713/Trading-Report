@@ -529,7 +529,7 @@ a { color: var(--accent); }
 
   <section id="assets" class="band"><div class="wrap">
     <h2>目前資產</h2>
-    <p class="tr-note" style="margin-top:0">現金是你提供的帳戶餘額；股票用最新收盤價估算市值，美股再用 USD/TWD 匯率換成約當台幣。融資買進的股票照市值算進資產，借來的融資金額加上從交割日起算的利息估計（口袋融資年利率 6.25%）列為負債扣掉。之後帳戶餘額有變，跟我說新的數字就會更新。</p>
+    <p class="tr-note" style="margin-top:0">現金是你提供的帳戶餘額；股票用最新收盤價估算市值，美股再用 USD/TWD 匯率換成約當台幣。融資買進的股票照市值算進資產，借來的融資金額加上從交割日起算的利息估計（口袋融資年利率 6.25%）列為負債扣掉；維持率低於 130% 會被追繳。之後帳戶餘額有變，跟我說新的數字就會更新。</p>
     <div class="tr-card">
       <h3>總資產（約當新台幣）</h3>
       <div class="tr-stats">
@@ -538,7 +538,7 @@ a { color: var(--accent); }
         <div class="tr-stat"><div class="lbl">美股市值</div><div class="val sm" data-source="assets_summary" data-field="us_twd" data-row="0">—</div><div class="sub" data-source="assets_summary" data-field="us_usd" data-row="0">—</div></div>
         <div class="tr-stat"><div class="lbl">台股市值</div><div class="val sm" data-source="assets_summary" data-field="tw_twd" data-row="0">—</div><div class="sub" data-source="assets_summary" data-field="tw_n" data-row="0">—</div></div>
         <div class="tr-stat"><div class="lbl">股票未實現損益</div><div class="val sm" data-source="assets_summary" data-field="pnl_twd" data-row="0">—</div><div class="sub">約當台幣</div></div>
-        <div class="tr-stat"><div class="lbl">融資負債</div><div class="val sm" data-source="assets_summary" data-field="debt" data-row="0">—</div><div class="sub">含利息估 <span data-source="assets_summary" data-field="interest" data-row="0">—</span>（年息 6.25%）・維持率 <span data-source="assets_summary" data-field="maint" data-row="0">—</span>（低於 130% 追繳）</div></div>
+        <div class="tr-stat"><div class="lbl">融資負債</div><div class="val sm" data-source="assets_summary" data-field="debt" data-row="0">—</div><div class="sub">利息 <span data-source="assets_summary" data-field="interest" data-row="0">—</span>・維持率 <span data-source="assets_summary" data-field="maint" data-row="0">—</span></div></div>
         <div class="tr-stat"><div class="lbl">匯率 USD/TWD</div><div class="val sm" data-source="assets_summary" data-field="rate" data-row="0">—</div><div class="sub" data-source="assets_summary" data-field="rate_date" data-row="0">—</div></div>
       </div>
       <div class="as-bar" id="as-bar" aria-label="資產配置"></div>
@@ -3352,11 +3352,21 @@ dash.onData(() => {
       rows.filter((r) => r.share > 0).forEach((r) => {
         const c = shade(r.kind, seen[r.kind]++), seg = document.createElement('span');
         seg.style.width = r.share + '%'; seg.style.background = c; seg.title = `${r.item} ${r.share.toFixed(1)}%`;
-        if (r.share >= 9) seg.textContent = `${r.item === '帳戶餘額' ? '現金' : r.item} ${r.share.toFixed(0)}%`;
+        seg.dataset.full = `${r.item === '帳戶餘額' ? '現金' : r.item} ${r.share.toFixed(0)}%`; seg.dataset.short = `${r.share.toFixed(0)}%`;
         bar.append(seg);
         const l = document.createElement('span'), i = document.createElement('i'); i.style.background = c;
         l.append(i, `${r.item === '帳戶餘額' ? '現金' : r.item} ${r.share.toFixed(1)}%`); leg.append(l);
       });
+      // 標籤放不下就改成只顯示百分比，再放不下就不顯示（細節看下方圖例）
+      const fit = () => bar.querySelectorAll(':scope > span').forEach((s) => {
+        s.textContent = ''; if (!s.dataset.full) return;
+        const t = document.createElement('em'); t.style.fontStyle = 'normal'; t.textContent = s.dataset.full; s.append(t);
+        if (t.offsetWidth > s.clientWidth - 10) t.textContent = s.dataset.short;
+        if (t.offsetWidth > s.clientWidth - 10) t.remove();
+      });
+      fit();
+      if (!window.__asFit) { window.__asFit = true; let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { const fn = window.__asFitFn; if (fn) fn(); }, 150); }); }
+      window.__asFitFn = fit;
     } }
 
   // brief
