@@ -465,6 +465,9 @@ a { color: var(--accent); }
 .as-bar { display: flex; height: 30px; margin-top: 18px; border-radius: 999px; overflow: hidden; border: 1px solid var(--rule-strong); background: var(--rule); }
 .as-bar span { display: flex; align-items: center; justify-content: center; min-width: 2px; font: 600 11.5px/1 var(--font-num); color: #fff; white-space: nowrap; overflow: hidden; text-shadow: 0 1px 2px rgba(0, 0, 0, .45); }
 .as-bar span + span { border-left: 2px solid var(--paper); }
+.mg-legend { margin-bottom: 4px; }
+.mg-legend i.dash { background: none !important; border-top: 2px dashed var(--ink-soft); height: 0; border-radius: 0; vertical-align: 3px; width: 14px; }
+.mg-legend i.dash.red { border-top-color: var(--up); }
 </style>
 <header class="topbar">
   <div class="topbar-in">
@@ -477,12 +480,13 @@ a { color: var(--accent); }
   </div>
 </header>
 <div class="shell">
-<div class="tabbar" role="tablist" aria-label="分頁"><button type="button" role="tab" data-tab="perf" aria-selected="true">績效</button><button type="button" role="tab" data-tab="bench" aria-selected="false">基準比較</button><button type="button" role="tab" data-tab="pos" aria-selected="false">部位</button><button type="button" role="tab" data-tab="ana" aria-selected="false">交易分析</button><button type="button" role="tab" data-tab="acct" aria-selected="false">帳戶</button></div>
+<div class="tabbar" role="tablist" aria-label="分頁"><button type="button" role="tab" data-tab="perf" aria-selected="true">績效</button><button type="button" role="tab" data-tab="bench" aria-selected="false">基準比較</button><button type="button" role="tab" data-tab="pos" aria-selected="false">部位</button><button type="button" role="tab" data-tab="margin" aria-selected="false">融資</button><button type="button" role="tab" data-tab="ana" aria-selected="false">交易分析</button><button type="button" role="tab" data-tab="acct" aria-selected="false">帳戶</button></div>
 <aside class="side">
   <nav class="site-nav" aria-label="章節">
     <button type="button" class="grp on" data-tab="perf">績效</button><a href="#top">摘要</a><a href="#assets">目前資產</a><a href="#overview">總覽</a><a href="#equity">總損益走勢</a><a href="#trend">損益走勢</a>
     <button type="button" class="grp" data-tab="bench">基準比較</button><a href="#vs0050" class="off-tab">台股 vs 0050</a><a href="#vssoxx" class="off-tab">美股 vs SOXX</a>
     <button type="button" class="grp" data-tab="pos">部位</button><a href="#open" class="off-tab">庫存與配息</a><a href="#leverage" class="off-tab">槓桿 ETF</a><a href="#holding" class="off-tab">持有期間</a>
+    <button type="button" class="grp" data-tab="margin">融資</button><a href="#margin" class="off-tab">融資部位</a>
     <button type="button" class="grp" data-tab="ana">交易分析</button><a href="#daytrade" class="off-tab">當沖</a><a href="#timing" class="off-tab">進出場時機</a><a href="#symbols" class="off-tab">標的</a><a href="#types" class="off-tab">交易類型</a><a href="#habits" class="off-tab">交易習慣</a>
     <button type="button" class="grp" data-tab="acct">帳戶</button><a href="#accounts" class="off-tab">帳戶</a><a href="#detail" class="off-tab">明細</a>
   </nav>
@@ -529,7 +533,7 @@ a { color: var(--accent); }
 
   <section id="assets" class="band"><div class="wrap">
     <h2>目前資產</h2>
-    <p class="tr-note" style="margin-top:0">現金是你提供的帳戶餘額；股票用最新收盤價估算市值，美股再用 USD/TWD 匯率換成約當台幣。融資買進的股票照市值算進資產，借來的融資金額加上從交割日起算的利息估計（口袋融資年利率 6.25%）列為負債扣掉；維持率低於 130% 會被追繳。之後帳戶餘額有變，跟我說新的數字就會更新。</p>
+    <p class="tr-note" style="margin-top:0">現金是你提供的帳戶餘額；股票用最新收盤價估算市值，美股再用 USD/TWD 匯率換成約當台幣。融資買進的股票照市值算進資產，借來的融資金額加上從交割日起算的利息估計（口袋融資年利率 6.25%）列為負債扣掉；維持率低於 130% 會被追繳，詳細看<a href="#margin">融資分頁</a>。之後帳戶餘額有變，跟我說新的數字就會更新。</p>
     <div class="tr-card">
       <h3>總資產（約當新台幣）</h3>
       <div class="tr-stats">
@@ -920,6 +924,71 @@ a { color: var(--accent); }
     <div class="tr-grid" style="margin-top: var(--cds-gap-md)">
       <div class="tr-card"><h3>台股：持有天數 vs 報酬率</h3><p class="tr-note">每點是一筆已實現交易。</p><div class="tr-chart" id="sc-twd" data-source="holding"></div></div>
       <div class="tr-card"><h3>美股：持有天數 vs 報酬率</h3><p class="tr-note">每點是一筆已實現交易。</p><div class="tr-chart" id="sc-usd" data-source="holding"></div></div>
+    </div>
+  </div></section>
+
+  <section id="margin" class="band tab-off"><div class="wrap">
+    <h2>融資</h2>
+    <p class="tr-note" style="margin-top:0">融資買進是向券商借錢買股票：上市股票一般融資六成、自備四成，融資金額千元以下捨去。<b>維持率 = 擔保品（股票）市值 ÷ 融資金額</b>，低於 130% 券商會發追繳通知，通常要在 2 個營業日內補繳，沒補就可能被賣出（斷頭）。利息 = 融資金額 × 年利率 × 天數 ÷ 365，從交割日起算，賣出還款時才扣；口袋融資年利率 6.25%。融資期限一般為半年，到期可申請展延。以下用最新收盤價估算，僅供參考，不構成投資建議。</p>
+    <div class="tr-card">
+      <h3>融資總覽</h3>
+      <div class="tr-stats">
+        <div class="tr-stat"><div class="lbl">整戶維持率</div><div class="val" data-source="margin_summary" data-field="maint" data-row="0">—</div><div class="sub">追繳線 130%</div></div>
+        <div class="tr-stat"><div class="lbl">距離追繳</div><div class="val sm" data-source="margin_summary" data-field="dist" data-row="0">—</div><div class="sub">擔保品市值再跌這麼多會碰到 130%</div></div>
+        <div class="tr-stat"><div class="lbl">融資金額</div><div class="val sm" data-source="margin_summary" data-field="loan" data-row="0">—</div><div class="sub"><span data-source="margin_summary" data-field="n" data-row="0">—</span></div></div>
+        <div class="tr-stat"><div class="lbl">擔保品市值</div><div class="val sm" data-source="margin_summary" data-field="mv" data-row="0">—</div><div class="sub">最新收盤價</div></div>
+        <div class="tr-stat"><div class="lbl">自備款</div><div class="val sm" data-source="margin_summary" data-field="self_paid" data-row="0">—</div><div class="sub">買進時實際付出的錢</div></div>
+        <div class="tr-stat"><div class="lbl">利息（估）</div><div class="val sm" data-source="margin_summary" data-field="interest" data-row="0">—</div><div class="sub">每天約 <span data-source="margin_summary" data-field="per_day" data-row="0">—</span></div></div>
+        <div class="tr-stat"><div class="lbl">未實現損益（含息）</div><div class="val sm" data-source="margin_summary" data-field="pnl" data-row="0">—</div><div class="sub">扣除預估賣出費用與利息</div></div>
+        <div class="tr-stat"><div class="lbl">實際槓桿</div><div class="val sm" data-source="margin_summary" data-field="lev" data-row="0">—</div><div class="sub">擔保品市值 ÷ 你的淨值</div></div>
+      </div>
+    </div>
+    <div class="tr-card" style="margin-top: var(--cds-gap-md)">
+      <h3>融資部位</h3>
+      <div class="tr-tbl-wrap">
+        <table id="mg-table" data-source="margin_pos" data-row-key="symbol">
+          <thead><tr>
+            <th data-field="symbol">代號</th>
+            <th data-field="name">名稱</th>
+            <th class="num" data-field="shares">股數</th>
+            <th data-field="date">買進日</th>
+            <th class="num" data-field="buy_price">成交價</th>
+            <th class="num" data-field="loan">融資金額</th>
+            <th class="num" data-field="self_paid">自備款</th>
+            <th class="num" data-field="last">最新價</th>
+            <th class="num" data-field="mv">市值</th>
+            <th class="num" data-field="maint">維持率</th>
+            <th class="num" data-field="call">追繳價</th>
+            <th class="num" data-field="dist">距追繳</th>
+            <th class="num" data-field="days">計息天數</th>
+            <th class="num" data-field="interest">利息（估）</th>
+            <th class="num" data-field="pnl">未實現（含息）</th>
+          </tr></thead><tbody></tbody>
+        </table>
+      </div>
+      <p class="tr-note" style="margin: 8px 0 0">追繳價 = 130% × 融資金額 ÷ 股數，收盤跌破這個價格，維持率就會低於 130%。利息從交割日（買進後第 2 個營業日）起算。</p>
+    </div>
+    <div class="tr-card" style="margin-top: var(--cds-gap-md)">
+      <h3>走勢：收盤價 vs 買進價、追繳價</h3>
+      <div class="tr-legend mg-legend"><span><i data-c="2"></i>收盤價</span><span><i class="dash"></i>買進價</span><span><i class="dash red"></i>追繳價（維持率 130%）</span></div>
+      <div id="mg-charts"></div>
+    </div>
+    <div class="tr-card" style="margin-top: var(--cds-gap-md)">
+      <h3>壓力測試：如果再跌…</h3>
+      <p class="tr-note">從最新收盤價往下跌，整戶維持率和你的淨值會怎麼變。融資放大了漲跌：股價跌 10%，你自己的錢跌的比例會更多。</p>
+      <div class="tr-tbl-wrap">
+        <table id="mg-scen" data-source="margin_scen" data-row-key="drop">
+          <thead><tr>
+            <th data-field="drop">股價變動</th>
+            <th class="num" data-field="price">價格</th>
+            <th class="num" data-field="mv">擔保品市值</th>
+            <th class="num" data-field="maint">維持率</th>
+            <th data-field="status">狀態</th>
+            <th class="num" data-field="equity">你的淨值</th>
+            <th class="num" data-field="equity_pct">淨值變動</th>
+          </tr></thead><tbody></tbody>
+        </table>
+      </div>
     </div>
   </div></section>
 
@@ -2307,6 +2376,71 @@ dash.calc('assets_summary', {
   }
 });
 
+// ---------- margin (融資) ----------
+const mgToday = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const mgOpen = (margin) => { const last = {}; (margin || []).forEach((m) => { const k = m.account + '|' + m.symbol; if (!last[k] || m.date > last[k].date) last[k] = m; }); return Object.values(last).filter((m) => Number(m.loan) > 0); };
+
+dash.calc('margin_pos', {
+  inputs: ['margin', 'holdings', 'fills'],
+  title: '融資部位',
+  description: '每個還沒還款的融資部位：融資金額、自備款、最新收盤市值、維持率（市值 ÷ 融資金額）、追繳價（130% × 融資金額 ÷ 股數）、距離追繳的跌幅、從交割日起算的利息估計，以及扣掉利息後的未實現損益。',
+  fn: (margin, holdings, fills) => {
+    const today = mgToday();
+    return mgOpen(margin).map((m) => {
+      const sh = Number(m.shares), loan = Number(m.loan);
+      const h = holdings.find((x) => x.account === m.account && x.symbol === m.symbol);
+      const buys = fills.filter((f) => f.account === m.account && f.symbol === m.symbol && f.date === m.date && f.side === '買進' && f.order_type === '融資');
+      const bsh = buys.reduce((s, f) => s + Number(f.shares), 0), amt = buys.reduce((s, f) => s + Number(f.shares) * Number(f.price), 0);
+      const last = h ? Number(h.market_value) / Number(h.shares) : null, mv = last == null ? null : last * sh;
+      const days = m.settle_date ? Math.max(0, Math.round((Date.parse(today + 'T00:00:00Z') - Date.parse(m.settle_date + 'T00:00:00Z')) / 864e5)) : 0;
+      const interest = m.rate ? Math.round(loan * Number(m.rate) / 100 * days / 365) : 0;
+      const call = 1.3 * loan / sh;
+      return { symbol: m.symbol, name: m.name, account: m.account, shares: sh, date: m.date, buy_price: bsh ? amt / bsh : null, amount: amt, loan, self_paid: Number(m.self_paid || 0),
+        last, as_of: h ? h.as_of : null, mv, maint: mv == null ? null : Math.round(mv / loan * 1000) / 10, call: Math.round(call * 100) / 100, dist: last ? Math.round((call / last - 1) * 1000) / 10 : null,
+        days, settle_date: m.settle_date || null, rate: m.rate ? Number(m.rate) : null, interest, per_day: m.rate ? loan * Number(m.rate) / 100 / 365 : 0,
+        pnl: h ? Number(h.est_pnl) - interest : null };
+    });
+  }
+});
+
+dash.calc('margin_summary', {
+  inputs: ['margin_pos'],
+  title: '融資總覽',
+  description: '所有融資部位合計：融資金額、擔保品市值、整戶維持率、距離 130% 追繳線的跌幅、自備款、利息估計、含息未實現損益，以及實際槓桿（擔保品市值 ÷ 扣掉融資與利息後的淨值）。',
+  fn: (pos) => {
+    const s = (k) => pos.reduce((a, r) => a + (r[k] || 0), 0);
+    const loan = s('loan'), mv = s('mv'), interest = s('interest'), equity = mv - loan - interest;
+    return [{ n: pos.length, loan, mv: Math.round(mv), maint: loan ? Math.round(mv / loan * 1000) / 10 : null, dist: loan && mv ? Math.round((1.3 * loan / mv - 1) * 1000) / 10 : null,
+      self_paid: s('self_paid'), interest, per_day: s('per_day'), pnl: pos.length ? Math.round(s('pnl')) : null, equity: Math.round(equity), lev: equity > 0 && loan ? Math.round(mv / equity * 100) / 100 : null }];
+  }
+});
+
+dash.calc('margin_scen', {
+  inputs: ['margin_pos'],
+  title: '融資壓力測試',
+  description: '假設所有融資部位從最新收盤價一起下跌 0%～30%，整戶維持率、是否低於 130% 追繳線、扣掉融資與利息後的淨值，以及淨值相對現在的變動。只有一檔融資時也列出對應價格。',
+  fn: (pos) => {
+    if (!pos.length) return [];
+    const loan = pos.reduce((a, r) => a + r.loan, 0), mv0 = pos.reduce((a, r) => a + (r.mv || 0), 0), int = pos.reduce((a, r) => a + r.interest, 0);
+    const eq0 = mv0 - loan - int, one = pos.length === 1 ? pos[0] : null;
+    const callDrop = 1.3 * loan / mv0 - 1;
+    const drops = [0, -0.05, -0.1, -0.15, -0.2, callDrop, -0.25, -0.3].filter((d, i, a) => a.indexOf(d) === i).sort((a, b) => b - a);
+    return drops.map((d) => {
+      const mv = mv0 * (1 + d), maint = mv / loan * 100, eq = mv - loan - int;
+      return { drop: d, is_call: d === callDrop, price: one && one.last ? one.last * (1 + d) : null, mv: Math.round(mv), maint: Math.round(maint * 10) / 10,
+        status: maint >= 130 - 1e-9 ? (d === callDrop ? '追繳線' : '正常') : '追繳', equity: Math.round(eq), equity_pct: eq0 > 0 ? Math.round((eq / eq0 - 1) * 1000) / 10 : null };
+    });
+  }
+});
+
+dash.calc('margin_chart', {
+  inputs: ['margin_pos', 'px_holdings'],
+  title: '融資部位走勢',
+  description: '每個融資部位從買進日起的每日收盤價（第一點是成交價），搭配買進價與 130% 追繳價兩條水平線。',
+  fn: (pos, px) => pos.flatMap((p) => [{ symbol: p.symbol, date: p.date, close: p.buy_price, buy: p.buy_price, call: p.call, first: true }]
+    .concat(px.filter((r) => r.symbol === p.symbol && r.date >= p.date).sort((a, b) => a.date.localeCompare(b.date)).map((r) => ({ symbol: p.symbol, date: r.date, close: Number(r.close), buy: p.buy_price, call: p.call, first: false }))))
+});
+
 // ---------- brief, day change ----------
 dash.calc('brief', {
   inputs: ['kpi', 'tw_net', 'us_net', 'holdings', 'by_symbol', 'holding_summary', 'lev_summary'],
@@ -2616,6 +2750,45 @@ function drawCompare(el, rows, cur = 'TWD', benchName = '0050') {
       tt.show(ev, [d.date.replaceAll('-', '/'), `你 ${signed(d.mine, cur)} ${u}`, `${benchName} ${signed(d.bench, cur)} ${u}`]);
     })
     .on('mouseleave', () => { dots.forEach((c) => c.style('opacity', 0)); tt.hide(); });
+}
+
+function drawMargin(el, rows) {
+  el.innerHTML = '';
+  if (!rows.length) return;
+  const W = el.clientWidth || 600, H = 240, m = rows[0], last = rows[rows.length - 1];
+  const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
+  const vals = rows.map((d) => d.close).concat([m.buy, m.call]);
+  const y = d3.scaleLinear([d3.min(vals) * 0.97, d3.max(vals) * 1.03], [H - 28, 14]).nice();
+  const yt = y.ticks(4), tf = d3.format(',.2~f');
+  const ml = measure(svg, yt.map(tf), 'tr-tick') + 8;
+  const labels = [`收盤 ${last.close.toFixed(2)}`, `買進 ${m.buy.toFixed(2)}`, `追繳 ${m.call.toFixed(2)}`];
+  const mr = measure(svg, labels, 'tr-lab') + 14;
+  const x = d3.scalePoint(rows.map((d, i) => i), [ml + 6, W - mr]).padding(rows.length === 1 ? 0.5 : 0);
+  svg.append('g').selectAll('line').data(yt).join('line').attr('x1', ml).attr('x2', W - mr).attr('y1', (d) => y(d)).attr('y2', (d) => y(d)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(yt).join('text').attr('class', 'tr-tick').attr('x', ml - 6).attr('y', (d) => y(d)).attr('dy', '0.32em').attr('text-anchor', 'end').text(tf);
+  const step = Math.max(1, Math.ceil(rows.length / Math.max(2, Math.floor((W - ml - mr) / 64))));
+  svg.append('g').selectAll('text').data(rows.map((d, i) => ({ d, i })).filter((o) => o.i % step === 0)).join('text').attr('class', 'tr-tick')
+    .attr('x', (o) => x(o.i)).attr('y', H - 8).attr('text-anchor', (o) => (o.i === 0 ? 'start' : 'middle')).text((o) => (o.d.first ? '買進' : o.d.date.slice(5).replace('-', '/')));
+  const hl = (v, color, dashA) => svg.append('line').attr('x1', ml).attr('x2', W - mr).attr('y1', y(v)).attr('y2', y(v)).attr('stroke', color).attr('stroke-width', 1.5).attr('stroke-dasharray', dashA);
+  hl(m.buy, 'var(--color-fg-muted)', '4 4'); hl(m.call, 'var(--up)', '6 4');
+  svg.append('path').datum(rows).attr('fill', 'none').attr('stroke', dash.colors[2]).attr('stroke-width', 2.5).attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round')
+    .attr('d', d3.line().x((d, i) => x(i)).y((d) => y(d.close)));
+  svg.append('circle').attr('cx', x(rows.length - 1)).attr('cy', y(last.close)).attr('r', 3.5).attr('fill', dash.colors[2]);
+  const ends = [{ t: labels[0], y: y(last.close) }, { t: labels[1], y: y(m.buy) }, { t: labels[2], y: y(m.call) }].sort((a, b) => a.y - b.y);
+  for (let i = 0; i < ends.length; i++) ends[i].y = Math.max(ends[i].y, i ? ends[i - 1].y + 14 : 10);
+  for (let i = ends.length - 1; i >= 0; i--) ends[i].y = Math.min(ends[i].y, i < ends.length - 1 ? ends[i + 1].y - 14 : H - 30);
+  ends.forEach((e) => svg.append('text').attr('class', 'tr-lab').attr('x', W - mr + 8).attr('y', e.y).attr('dy', '0.32em').text(e.t));
+  const tt = tooltip(el.closest('.tr-card'));
+  const dot = svg.append('circle').attr('r', 4).attr('fill', dash.colors[2]).style('opacity', 0);
+  svg.append('rect').attr('x', ml).attr('y', 0).attr('width', W - ml - mr + 8).attr('height', H).attr('fill', 'transparent')
+    .on('mousemove', (ev) => {
+      const [mx] = d3.pointer(ev);
+      let bi = 0; rows.forEach((d, i) => { if (Math.abs(x(i) - mx) < Math.abs(x(bi) - mx)) bi = i; });
+      const d = rows[bi], mt = d.close / m.call * 130;
+      dot.attr('cx', x(bi)).attr('cy', y(d.close)).style('opacity', 1);
+      tt.show(ev, [`${d.date.replaceAll('-', '/')} ${d.first ? '買進' : '收盤'}`, `價格 ${d.close.toFixed(2)}（${d.close >= m.buy ? '+' : '−'}${Math.abs((d.close / m.buy - 1) * 100).toFixed(1)}%）`, `維持率 ${mt.toFixed(1)}%`]);
+    })
+    .on('mouseleave', () => { dot.style('opacity', 0); tt.hide(); });
 }
 
 function drawLev(el, rows) {
@@ -3438,6 +3611,55 @@ dash.onData(() => {
       document.querySelectorAll('.lev-legend i[data-c]').forEach((i) => { i.style.background = dash.colors[Number(i.getAttribute('data-c'))]; });
     } }
 
+  // margin (融資)
+  { const twd = (v) => (v == null ? '—' : 'NT$' + Math.round(v).toLocaleString('en-US'));
+    const pct1 = (v) => (v == null ? '—' : v.toFixed(1) + '%');
+    fillMarks('margin_summary', (f, v) => {
+      if (f === 'n') return v ? `${v} 檔融資部位` : '目前沒有融資部位';
+      if (v == null) return '—';
+      if (f === 'maint') return pct1(v);
+      if (f === 'dist') return (v <= 0 ? '−' : '+') + Math.abs(v).toFixed(1) + '%';
+      if (f === 'lev') return v.toFixed(2) + ' 倍';
+      if (f === 'per_day') return 'NT$' + v.toFixed(1);
+      if (f === 'pnl') return signed(v, 'TWD');
+      return twd(v);
+    });
+    if (ok('margin_summary')) {
+      const s = dash.data('margin_summary').data[0];
+      document.querySelectorAll('.tr [data-source="margin_summary"][data-field="pnl"]').forEach((el) => tone(el, s.pnl));
+      document.querySelectorAll('.tr [data-source="margin_summary"][data-field="maint"]').forEach((el) => { el.style.color = s.maint != null && s.maint < 140 ? 'var(--color-bad)' : ''; });
+    }
+    const mt = document.getElementById('mg-table'), ms = document.getElementById('mg-scen');
+    const empty = (table, n, msg) => { const tb = table.querySelector('tbody'); if (tb.children.length) return; const tr = document.createElement('tr'), td = document.createElement('td'); td.colSpan = n; td.textContent = msg; td.style.color = 'var(--ink-soft)'; tr.append(td); tb.append(tr); };
+    const px = (v) => (v == null ? '—' : v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 3 }));
+    if (mt && ok('margin_pos')) { renderTable(mt, dash.data('margin_pos').data, [
+      { f: 'symbol' }, { f: 'name' }, { f: 'shares', num: true, fmt: (v) => v.toLocaleString('en-US') }, { f: 'date', fmt: (v) => v.replaceAll('-', '/') },
+      { f: 'buy_price', num: true, fmt: px }, { f: 'loan', num: true, fmt: twd }, { f: 'self_paid', num: true, fmt: twd },
+      { f: 'last', num: true, fmt: px }, { f: 'mv', num: true, fmt: twd }, { f: 'maint', num: true, fmt: pct1 },
+      { f: 'call', num: true, fmt: px }, { f: 'dist', num: true, fmt: (v) => (v == null ? '—' : (v <= 0 ? '−' : '+') + Math.abs(v).toFixed(1) + '%') },
+      { f: 'days', num: true, fmt: (v, r) => (r.settle_date && v === 0 ? `0（${r.settle_date.slice(5).replace('-', '/')} 起算）` : String(v)) },
+      { f: 'interest', num: true, fmt: twd }, { f: 'pnl', num: true, tone: true, fmt: (v) => (v == null ? '—' : signed(v, 'TWD')) }
+    ], (r) => enc(r.symbol)); empty(mt, 15, '目前沒有融資部位。'); }
+    if (ms && ok('margin_scen')) { renderTable(ms, dash.data('margin_scen').data, [
+      { f: 'drop', fmt: (v, r) => (v === 0 ? '現在' : (r.is_call ? '跌到追繳線 ' : '') + '−' + Math.abs(v * 100).toFixed(1).replace(/\.0$/, '') + '%') },
+      { f: 'price', num: true, fmt: (v) => (v == null ? '—' : v.toFixed(2)) }, { f: 'mv', num: true, fmt: twd }, { f: 'maint', num: true, fmt: pct1 }, { f: 'status' },
+      { f: 'equity', num: true, fmt: twd }, { f: 'equity_pct', num: true, tone: true, fmt: (v) => (v == null ? '—' : v === 0 ? '0%' : (v > 0 ? '+' : '−') + Math.abs(v).toFixed(1) + '%') }
+    ], (r) => enc(String(r.drop))); empty(ms, 7, '目前沒有融資部位。');
+      ms.querySelectorAll('tbody tr').forEach((tr, i) => { const r = dash.data('margin_scen').data[i]; if (!r) return; tr.style.color = r.status === '追繳' ? 'var(--color-bad)' : ''; if (r.is_call) tr.style.fontWeight = '600'; }); }
+    const box = document.getElementById('mg-charts');
+    if (box && ok('margin_chart')) {
+      const rows = dash.data('margin_chart').data, syms = [...new Set(rows.map((r) => r.symbol))];
+      box.innerHTML = '';
+      if (!syms.length) { const p = document.createElement('p'); p.className = 'tr-note'; p.textContent = '目前沒有融資部位。'; box.append(p); }
+      syms.forEach((s) => {
+        if (syms.length > 1) { const t = document.createElement('div'); t.className = 'lev-chart-t'; t.textContent = s; box.append(t); }
+        const c = document.createElement('div'); c.className = 'tr-chart'; c.style.minHeight = '240px'; box.append(c);
+        const rs = rows.filter((r) => r.symbol === s); drawMargin(c, rs);
+        if (rs.length < 3) { const p = document.createElement('p'); p.className = 'tr-note'; p.style.margin = '6px 0 0'; p.textContent = '剛買進，資料天數還少；之後每個交易日收盤會多一點。'; box.append(p); }
+      });
+      document.querySelectorAll('.mg-legend i[data-c]').forEach((i) => { i.style.background = dash.colors[Number(i.getAttribute('data-c'))]; });
+    } }
+
   // trend, distribution, habits, symbols
   [['c-twd', 'TWD'], ['c-usd', 'USD']].forEach(([id, cur]) => {
     const el = document.getElementById(id);
@@ -3498,7 +3720,7 @@ document.querySelectorAll('.tr-nav button').forEach((b) => b.addEventListener('c
 </script>
 <script>
 (function () {
-  const TABS = { perf: ['top', 'assets', 'overview', 'equity', 'trend'], bench: ['vs0050', 'vssoxx'], pos: ['open', 'dividends', 'leverage', 'holding'], ana: ['daytrade', 'timing', 'symbols', 'types', 'habits'], acct: ['accounts', 'detail'] };
+  const TABS = { perf: ['top', 'assets', 'overview', 'equity', 'trend'], bench: ['vs0050', 'vssoxx'], pos: ['open', 'dividends', 'leverage', 'holding'], margin: ['margin'], ana: ['daytrade', 'timing', 'symbols', 'types', 'habits'], acct: ['accounts', 'detail'] };
   const tabOf = {};
   Object.entries(TABS).forEach(([t, ids]) => ids.forEach((id) => { tabOf[id] = t; }));
   const links = [...document.querySelectorAll('.site-nav a')];
